@@ -4,7 +4,6 @@ const models =require('../database/models');
 
 //A route to fetch all recipes
 router.get('/', (req, res, next) =>  {
-    //Recipe=const variable for recipe model name from database/models
     models.Recipe.findAll()
     .then(recipes => {
         res.status(200)
@@ -51,7 +50,7 @@ router.post('/', (req, res, next) =>{
     models.Recipe.create ({
       recipename: req.body.recipename,
       //coudl add more column name depending on the table
-      imageurl: req.body.imageurl
+      description: req.body.description
     })
     .then(recipe => {
         res.status(201)
@@ -63,13 +62,13 @@ router.post('/', (req, res, next) =>{
     .catch(err => {
         res.status(400)
         .json({
-            message: "Error, recipe is not create.",
+            message: "Error, recipe is not created.",
             err
         });
     })
 
 })
-//a route to udate a recipe 
+//a route to update a recipe 
 router.put ('/:id', (req, res, next) => {
     models.Recipe.findByPK(req.params.id)
     .then(recipe => {
@@ -81,7 +80,7 @@ router.put ('/:id', (req, res, next) => {
 
         recipe.update({
         recipename: req.body.recipename,
-        imageurl: req.body.imagurl
+        description: req.body.description
         });
 
         recipe.save();
