@@ -105,7 +105,7 @@ router.put ('/:id', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
     models.Recipe.findByPk(req.params.id)
     .then (recipe => {
-        if(recipe)
+        if(!recipe)
         res.status(404)
         .json({
             message: "Recipe is not found. "
