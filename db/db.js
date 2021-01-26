@@ -3,7 +3,7 @@ const { name } = require('../package.json');
 
 // Initialize database with Sequelize . put your username and password for database
 const db = new Sequelize(
-  process.env.DATABASE_URL || `postgres://postgres:12345@localhost:5432/${name}`,
+  process.env.DATABASE_URL || `postgres://postgres:64!TeQg@/52/@localhost:5432/${name}`,
   {
     logging: false,
   }
