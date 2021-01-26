@@ -6,7 +6,7 @@ const  { User }= require('../db/models');
 // A route to fetch all users
 router.get('/', async (req, res, next) => {
   try {
-    const allUsers = await User.findAll();
+    const allUsers = await models.User.findAll();
     // An if/ternary statement to handle not finding allPlayers explicitly
     !allUsers
       ? res.status(404).send('Users Listing is Not Found')
@@ -83,7 +83,7 @@ router.post('/', (req, res, next) =>{
 })
 //a route to update a user
 router.put ('/:id', (req, res, next) => {
-    models.User.findByPK(req.params.id)
+    models.User.findByPk(req.params.id)
     .then(user => {
         if(!recipe )
         res.status(404)
@@ -117,7 +117,7 @@ router.put ('/:id', (req, res, next) => {
 
 // A route to delete a recipe 
 router.delete('/:id', (req, res, next) => {
-    models.User.findByPK(req.params.id)
+    models.User.findByPk(req.params.id)
     .then (user => {
         if(user)
         res.status(404)
