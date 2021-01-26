@@ -17,6 +17,7 @@ router.get('/', async (req, res, next) => {
 });
 
 //A route to fetch a single user
+//need to make edit the followign code
 router.get('/:id', (req, res, next) => {
     models.User.findByPk(req.params.id)
     .then(user => {
