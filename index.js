@@ -38,6 +38,7 @@ db.authenticate()
 const syncDb = () => {
   
   if (process.env.NODE_ENV === 'production') {
+    console.log("connected to db");
     db.sync();
   }
   else {

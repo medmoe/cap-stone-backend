@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const models= require('../db/models');
+const  {User }= require('../db/models');
 
 // Express Routes for Users - Read more on routing at https://expressjs.com/en/guide/routing.html
 // A route to fetch all users
@@ -8,7 +8,7 @@ router.get('/', async (req, res, next) => {
   try {
     const allUsers = await User.findAll();
     // An if/ternary statement to handle not finding allPlayers explicitly
-    !allUser
+    !allUsers
       ? res.status(404).send('Users Listing is Not Found')
       : res.status(200).json(allUsers);
   } catch (error) {

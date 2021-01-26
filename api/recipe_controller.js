@@ -1,6 +1,7 @@
 const express =require('express');
 const router =express.Router();
-const models =require('../db/models');
+//const models =require('../db/models');
+const { Recipe } = require('../db/models');
 
 //A route to fetch all recipes
 router.get('/', (req, res, next) =>  {
