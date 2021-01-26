@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const  models = require('../db/models');
+
 const bcrypt = require('bcrypt');
+//const  { User }= require('../db/models');
+const models =require('../db/models');
 
 // Express Routes for Users - Read more on routing at https://expressjs.com/en/guide/routing.html
 // A route to fetch all users
@@ -55,6 +57,7 @@ router.post('/login', async (req, res, next) => {
 })
 
 //A route to fetch a single user
+//need to make edit the followign code
 router.get('/:id', (req, res, next) => {
     models.User.findByPk(req.params.id)
     .then(user => {
@@ -78,11 +81,30 @@ router.get('/:id', (req, res, next) => {
         })
     })
 })
+
 //a route to update a user
-router.put ('/:id', (req, res, next) => {
+//same as the put method above to update a user but not working properly.
+/*router.put('/:id', async (req, res, next) => {
+    try {
+        const user=await models.User.findByPk(req.params.id)
+        if (!user) {
+            res.status(404).send('user not found');
+            await user.update(req.body);
+        }
+            
+    } catch (error) {
+        next(error);
+        
+    }
+}); 
+*/
+
+
+
+router.put('/:id', (req, res, next) =>{
     models.User.findByPk(req.params.id)
     .then(user => {
-        if(!recipe )
+        if(!user )
         res.status(404)
         .json({
             message: "user not found"
@@ -99,7 +121,7 @@ router.put ('/:id', (req, res, next) => {
 
         res.status (200)
         .json({
-            message: "user info are updated",
+            message: "user Info info are updated",
             user
         });            
     })
@@ -112,11 +134,13 @@ router.put ('/:id', (req, res, next) => {
     });
 });
 
+
+
 // A route to delete a recipe 
 router.delete('/:id', (req, res, next) => {
     models.User.findByPk(req.params.id)
     .then (user => {
-        if(user)
+        if(!user)
         res.status(404)
         .json({
             message: "user is not found. "
@@ -136,6 +160,6 @@ router.delete('/:id', (req, res, next) => {
         });
     });
 });
-
+//latest copy of user routes
 // Export our router, so that it can be imported to construct our api routes
 module.exports = router;
