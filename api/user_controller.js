@@ -68,7 +68,7 @@ router.post('/', (req, res, next) =>{
       password: req.body.password
     })
     .then(user => {
-        res.status(201)
+        res.status(200)
         .json({
             message: "User is created",
             user
@@ -122,7 +122,7 @@ router.put('/:id', (req, res, next) =>{
 
         res.status (200)
         .json({
-            message: "user info are updated",
+            message: "user Info info are updated",
             user
         });            
     })
