@@ -30,7 +30,13 @@ const serverRun = () => {
 // {force:true} - drops current tables and places new empty tables
 //{alter:true} - This checks what is the current state of the table in the database (which columns it has, what are their data types, etc), and then performs the necessary changes in the table to make it match the model.
 
+//check if the database is connected
+db.authenticate()
+  .then(() => console.log("database is connected"))
+  .catch(error => console.log(error));
+  
 const syncDb = () => {
+  
   if (process.env.NODE_ENV === 'production') {
     db.sync();
   }
