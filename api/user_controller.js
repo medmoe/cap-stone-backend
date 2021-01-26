@@ -16,6 +16,25 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+//a route to update a user
+//same as the put method above to update a user but not working properly.
+/*router.put('/:id', async (req, res, next) => {
+    try {
+        const user=await models.User.findByPk(req.params.id)
+        if (!user) {
+            res.status(404).send('user not found');
+            await user.update(req.body);
+        }
+            
+    } catch (error) {
+        next(error);
+        
+    }
+}); 
+*/
+
+
+
 
 // a route to register the user in our database
 router.post('/register', async (req, res, next) => {
@@ -35,7 +54,6 @@ router.post('/register', async (req, res, next) => {
 })
 
 //A route to fetch a single user
-//need to make edit the followign code
 router.get('/:id', (req, res, next) => {
     models.User.findByPk(req.params.id)
     .then(user => {
@@ -84,7 +102,7 @@ router.post('/', (req, res, next) =>{
 
 })
 //a route to update a user
-//same as the put method above to update a user but not working properly.
+//same as the put method below to update a user but not working properly.
 /*router.put('/:id', async (req, res, next) => {
     try {
         const user=await models.User.findByPk(req.params.id)

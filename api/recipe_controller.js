@@ -3,6 +3,8 @@ const router =express.Router();
 const models =require('../db/models');
 //const { Recipe } = require('../db/models');
 
+
+router.get()
 //A route to fetch all recipes
 router.get('/', (req, res, next) =>  {
     models.Recipe.findAll()
