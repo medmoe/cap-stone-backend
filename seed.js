@@ -1,13 +1,42 @@
 const db = require('./db');
-const Players = require('./db/models').Player;
 
-const seedPlayers = [
-  { firstName: 'Bilbo', lastName: 'Baggins', jerseyNumber: 11 },
-  { firstName: 'Harry', lastName: 'Potter', jerseyNumber: 22 },
-  { firstName: 'Lucifer', lastName: 'Morningstart', jerseyNumber: 666 },
-];
+const { User } = require('./db/models');
 
-const seed = () => {
-  return Players.bulkCreate(seedPlayers);
-};
-seed().then(() => process.exit());
+
+
+const seedDatabase = async() => {
+  await Promise.all([
+   User.create({
+    firstName: "Garry",
+    lastName: "Mease",
+    email: "gmease0@blogger.com",
+    password: "WbVWdE"
+   }),
+   User.create({
+    firstName: "Nappy",
+    lastName: "Howley",
+    email: "nhowley1@weebly.com",
+    password: "uBMBBRc"
+   }),
+   User.create({
+    firstName: "Annetta",
+    lastName: "Cowe",
+    email: "acowe2@alexa.com",
+    password: "wE7FWfl2"
+   }),
+   User.create({
+    firstName: "Clarine",
+    lastName: "Fordham",
+    email: "cfordham3@hubpages.com",
+    password: "dmgWIJJ8JFAF"
+   }),
+   User.create({
+    firstName: "Sofia",
+    lastName: "Leaves",
+    email: "sleaves4@blogspot.com",
+    password: "oGulIieavr"
+   })
+  ]);
+}
+
+module.exports = seedDatabase;
