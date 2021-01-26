@@ -1,7 +1,7 @@
 const express =require('express');
 const router =express.Router();
-//const models =require('../db/models');
-const { Recipe } = require('../db/models');
+const models =require('../db/models');
+//const { Recipe } = require('../db/models');
 
 //A route to fetch all recipes
 router.get('/', (req, res, next) =>  {
@@ -11,16 +11,16 @@ router.get('/', (req, res, next) =>  {
         .json({
             message: "Sucessfully find all recipes",
             recipes
-        })
+        });
     })
     .catch(err => {
-        res.status(500)
+        res.status(404)
         .json({
             message: "error, unable to fetch recipes",
             err
-        })
-    })
-})
+        });
+    });
+});
 
 //A route to fetch a single recipe
 router.get('/:id', (req, res, next) => {
@@ -49,19 +49,19 @@ router.get('/:id', (req, res, next) => {
 // A route to add a new recipe
 router.post('/', (req, res, next) =>{
     models.Recipe.create ({
-      recipename: req.body.recipename,
+      name: req.body.name,
       //coudl add more column name depending on the table
       description: req.body.description
     })
     .then(recipe => {
-        res.status(201)
+        res.status(200)
         .json({
             message: "Recipe sucessfully created",
             recipe
         });
     })
     .catch(err => {
-        res.status(400)
+        res.status(404)
         .json({
             message: "Error, recipe is not created.",
             err
@@ -71,7 +71,7 @@ router.post('/', (req, res, next) =>{
 })
 //a route to update a recipe 
 router.put ('/:id', (req, res, next) => {
-    models.Recipe.findByPK(req.params.id)
+    models.Recipe.findByPk(req.params.id)
     .then(recipe => {
         if(!recipe )
         res.status(404)
@@ -80,7 +80,7 @@ router.put ('/:id', (req, res, next) => {
         });
 
         recipe.update({
-        recipename: req.body.recipename,
+        name: req.body.name,
         description: req.body.description
         });
 
@@ -103,7 +103,7 @@ router.put ('/:id', (req, res, next) => {
 
 // A route to delete a recipe 
 router.delete('/:id', (req, res, next) => {
-    models.Recipe.findByPK(req.params.id)
+    models.Recipe.findByPk(req.params.id)
     .then (recipe => {
         if(recipe)
         res.status(404)
