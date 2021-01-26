@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-//const  { User }= require('../db/models');
-const models =require('../db/models');
+const  { User }= require('../db/models');
 
 // Express Routes for Users - Read more on routing at https://expressjs.com/en/guide/routing.html
 // A route to fetch all users
@@ -16,6 +15,23 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+
+// a route to register the user in our database
+router.post('/register', async (req, res, next) => {
+    try {
+        console.log(JSON.stringify(req.body));
+        /*const {firstName, lastName, email, password} = req.body;
+        const user = await User.create({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            password: password,
+        })
+        res.json(user);*/
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 //A route to fetch a single user
 router.get('/:id', (req, res, next) => {

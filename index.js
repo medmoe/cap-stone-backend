@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const compression = require('compression');
 const cors = require('cors');
 const path = require('path');
+const bodyParser = require('body-parser');
+
 
 //IMPORTS/VARIABLES
 const PORT = process.env.PORT || 8080;
@@ -15,9 +17,28 @@ const seedDatabase = require('./seed.js');
 
 //CORS!
 app.use(cors());
+//BODY PARSER
+app.use(express.urlencoded({extended: false}));
+app.use(bodyParser.json());
+app.use(compression());
+app.use(morgan('dev'));
 
 //Mount on API
 app.use('/api', require('./api'));
+
+
+
+// Error handling;
+app.use((req, res, next) => {
+  if (path.extname(req.path).length) {
+    const err = new Error('Not found');
+    err.status = 404;
+    next(err);
+  }
+  else {
+    next();
+  }
+});
 
 //START BACKEND SERVER FUNCTIOON
 const serverRun = () => {
@@ -38,7 +59,6 @@ db.authenticate()
 const syncDb = () => {
   
   if (process.env.NODE_ENV === 'production') {
-    console.log("connected to db");
     db.sync();
   }
   else {
@@ -47,8 +67,7 @@ const syncDb = () => {
       .then(() => seedDatabase())
       .catch(err => {
         if (err.name === 'SequelizeConnectionError') {
-          createLocalDatabase();
-          seedDatabase();
+          console.log(err.name);
         }
         else {
           console.log(err);
