@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const  {User }= require('../db/models');
+const  { User }= require('../db/models');
 
 // Express Routes for Users - Read more on routing at https://expressjs.com/en/guide/routing.html
 // A route to fetch all users
