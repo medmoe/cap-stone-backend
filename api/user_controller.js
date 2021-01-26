@@ -50,7 +50,7 @@ router.post('/', (req, res, next) =>{
       password: req.body.password
     })
     .then(user => {
-        res.status(201)
+        res.status(200)
         .json({
             message: "User is created",
             user
