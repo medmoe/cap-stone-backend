@@ -7,7 +7,7 @@ const Recipe = db.define( 'recipe', {
             allowNull: false,
         },
         description: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
         },
     });
