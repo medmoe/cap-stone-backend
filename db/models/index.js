@@ -10,4 +10,5 @@ Recipe.belongsTo(User);
 module.exports = {
   Player,
   User,
+  Recipe
 };
