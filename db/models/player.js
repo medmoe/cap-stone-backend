@@ -3,7 +3,7 @@ const db = require('../db');
 
 //Sample Model  Read More At https://sequelize.org/master/manual/model-basics.html
 
-const Player = db.define('player', {
+/* const Player = db.define('player', {
   firstName: {
     type: Sequelize.STRING,
     allowNull: false,
@@ -21,3 +21,4 @@ const Player = db.define('player', {
 });
 
 module.exports = Player;
+*/
