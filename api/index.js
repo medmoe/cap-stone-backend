@@ -3,8 +3,8 @@ module.exports = router;
 
 // Mounts players api calls from api file on /api/players
 router.use('/players', require('./players'));
-router.use('/recipemodelname, require('./recipe_controller'));
-router.use ('/usermodelname, require('./user_controller'));
+//router.use('/recipes, require('./recipe_controller'));
+//router.use ('/users, require('./user_controller'));
 //Anythingn not found gets a 404
 router.use((req, res, next) => {
   const error = new Error('Not Found');
