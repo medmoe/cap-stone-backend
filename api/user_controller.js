@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+
+const bcrypt = require('bcrypt');
 //const  { User }= require('../db/models');
 const models =require('../db/models');
 
@@ -20,15 +22,35 @@ router.get('/', async (req, res, next) => {
 // a route to register the user in our database
 router.post('/register', async (req, res, next) => {
     try {
-        console.log(JSON.stringify(req.body));
-        /*const {firstName, lastName, email, password} = req.body;
-        const user = await User.create({
+        const {firstName, lastName, email, password} = req.body;
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await models.User.create({
             firstName: firstName,
             lastName: lastName,
             email: email,
-            password: password,
+            password: hashedPassword
         })
-        res.json(user);*/
+        res.json(user);
+    } catch {
+        res.status(500).send();
+    }
+})
+// a route to log the user in
+router.post('/login', async (req, res, next) => {     
+        const {email, password} = req.body;
+        const user = await models.User.findOne({ where: {
+            email: email,
+        }}) 
+        if(!user){
+            return res.status(400).send('Cannot find user');
+        }
+    try{
+        if(await bcrypt.compare(password, user.password)){
+            res.send('you logged in successfuly');
+        }else{
+            res.send("not allowed");
+        }
     } catch (error) {
         console.log(error);
     }
@@ -59,30 +81,7 @@ router.get('/:id', (req, res, next) => {
         })
     })
 })
-// A route to add a new user
-router.post('/', (req, res, next) =>{
-    models.User.create ({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      password: req.body.password
-    })
-    .then(user => {
-        res.status(200)
-        .json({
-            message: "User is created",
-            user
-        });
-    })
-    .catch(err => {
-        res.status(400)
-        .json({
-            message: "Error, user is not created.",
-            err
-        });
-    })
 
-})
 //a route to update a user
 //same as the put method above to update a user but not working properly.
 /*router.put('/:id', async (req, res, next) => {
