@@ -14,7 +14,7 @@ app.get('/', async (req, res, next) => {
     } catch(error) {
         console.error(error);
     }
-});
+});gi
 
 app.listen(8080, ()=> {
     console.log("I am getting result from recipe API");
