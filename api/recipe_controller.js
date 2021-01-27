@@ -48,6 +48,7 @@ router.get('/', (req, res, next) =>  {
     });
 });
 
+//A route to fetch a single recipe
 router.get('/:name', async (req, res, next) => {
     try {
       const recipe = await models.Recipe.findOne({where: 
@@ -62,7 +63,7 @@ router.get('/:name', async (req, res, next) => {
     }
   });
    
-//A route to fetch a single recipe
+//A route to fetch a single recipe, have errors
 /*router.get('/:id', (req, res, next) => {
     models.Recipe.findByPk(req.params.id)
     .then(recipe => {
@@ -90,11 +91,15 @@ router.get('/:name', async (req, res, next) => {
 
 
 // A route to add a new recipe
-router.post('/', (req, res, next) =>{
+router.post('/:newRecipe', (req, res, next) =>{
     models.Recipe.create ({
       name: req.body.name,
       //coudl add more column name depending on the table
-      description: req.body.description
+      description: req.body.description,
+      ingredient: req.body.ingredient,
+      instructions: req.body.instructions,
+      cookingTime: req.body.cookingTime,
+      imageURL: req.body.imageUrl
     })
     .then(recipe => {
         res.status(200)
@@ -123,8 +128,12 @@ router.put ('/:id', (req, res, next) => {
         });
 
         recipe.update({
-        name: req.body.name,
-        description: req.body.description
+            name: req.body.name,
+            description: req.body.description,.
+            ingredient: req.body.ingredient,
+            instructions: req.body.instructions,
+            cookingTime: req.body.cookingTime,
+            imageURL: req.body.imageUrl
         });
 
         recipe.save();
