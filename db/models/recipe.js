@@ -10,7 +10,7 @@ const Recipe = db.define( 'recipe', {
             type: Sequelize.TEXT,
             
         },
-        ingredients: {
+        ingredient: {
             type: Sequelize.TEXT,
             
         },
@@ -20,7 +20,6 @@ const Recipe = db.define( 'recipe', {
         },
         cookingTime: {
             type: Sequelize.TEXT,
-            
         },
         imageURL: {
             type: Sequelize.TEXT,
