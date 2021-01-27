@@ -2,23 +2,31 @@ const express =require('express');
 const router =express.Router();
 const models =require('../db/models');
 //const { Recipe } = require('../db/models');
-const axios =require('axios');
+const {default: Axios} =require('axios');
+const API_KEY= "7e16571e4a5d4b7e88bb9317652f6767";
+const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?query=udon&apiKey=${API_KEY}`;
+//sample api link:
+//https://api.spoonacular.com/recipes/complexSearch?query=pasta&apiKey=7e16571e4a5d4b7e88bb9317652f6767
 
 
+//Route to serve up a recipe by query 
+router.get("/search", async (req, res, next) => {
+    //const {product } =req.params;
+    let results =[];
+        await Axios.get(RECIPE_API_URL)
+        .then((getResult) => getResult.data.results)
+        .then ((response) => {
+            results =response;
 
-app.get('/', async (req, res, next) => {
+        }) .catch((error) => console.error(error));
     try {
-        const recipesSearch =await axios.get('https://api.spoonacular.com/recipes/complexSearch?&query=udon&apiKey=7e16571e4a5d4b7e88bb9317652f6767');
-        console.log(recipesSearch.data.results);
-        res.send(recipesSearch.data.results);
-    } catch(error) {
-        console.error(error);
-    }
+        res.status (200).json (results);
+   }catch (error) {
+       next(error);
+   }   
 });
 
-app.listen(8080, ()=> {
-    console.log("I am getting result from recipe API");
-})
+
 
 
 //A route to fetch all recipes
