@@ -6,7 +6,7 @@ const axios =require('axios');
 
 
 
-app.get('/', async (req, res, next) => {
+/*app.get('/', async (req, res, next) => {
     try {
         const recipesSearch =await axios.get('https://api.spoonacular.com/recipes/complexSearch?&query=udon&apiKey=7e16571e4a5d4b7e88bb9317652f6767');
         console.log(recipesSearch.data.results);
@@ -14,11 +14,11 @@ app.get('/', async (req, res, next) => {
     } catch(error) {
         console.error(error);
     }
-});
+}); */
 
-app.listen(8080, ()=> {
+/*app.listen(8080, ()=> {
     console.log("I am getting result from recipe API");
-})
+}) */
 
 
 //A route to fetch all recipes
