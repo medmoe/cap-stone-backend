@@ -77,8 +77,8 @@ router.post('/login', async (req, res, next) => {
 })
 
 //A route to fetch a single user
-router.get('/:id', (req, res, next) => {
-    models.User.findByPk(req.params.id)
+router.get('/:name', (req, res, next) => {
+    models.User.findone(req.params.name)
     .then(user => {
         if(!user)
         res.status(404)
