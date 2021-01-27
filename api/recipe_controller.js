@@ -2,15 +2,10 @@ const express =require('express');
 const router =express.Router();
 const models =require('../db/models');
 //const { Recipe } = require('../db/models');
-
 const {default: Axios} =require('axios');
 
-//const API_KEY= "7e16571e4a5d4b7e88bb9317652f6767";
 const API_KEY= process.env.API_KEY;
-//console.log(process.env);
 const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
-
-
 
 //Route to serve up a recipe by product search,
 //result will includes image url, title, ingrediens and description (or summary)
@@ -34,8 +29,6 @@ router.get('/search/:product', async (req, res, next) => {
    }   
 });
 
-
-
 //A route to fetch all recipes
 router.get('/', (req, res, next) =>  {
     models.Recipe.findAll()
@@ -55,9 +48,23 @@ router.get('/', (req, res, next) =>  {
     });
 });
 
+router.get('/:name', async (req, res, next) => {
+    try {
+      const recipe = await models.Recipe.findOne({where: 
+        { name: req.params.name },
+          plain:true });
+      // An if/ternary statement to handle not finding recipe explicitly
+      !recipe
+        ? res.status(404).send('recipe Not Found')
+        : res.status(200).json(recipe);
+    } catch (error) {
+      next(error);
+    }
+  });
+   
 //A route to fetch a single recipe
-router.get('/:name', (req, res, next) => {
-    models.Recipe.findByPk(req.params.name)
+/*router.get('/:id', (req, res, next) => {
+    models.Recipe.findByPk(req.params.id)
     .then(recipe => {
         if(!recipe)
         res.status(404)
@@ -79,6 +86,9 @@ router.get('/:name', (req, res, next) => {
         })
     })
 })
+*/
+
+
 // A route to add a new recipe
 router.post('/', (req, res, next) =>{
     models.Recipe.create ({
