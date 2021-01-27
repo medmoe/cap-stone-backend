@@ -2,6 +2,7 @@ const express =require('express');
 const router =express.Router();
 const models =require('../db/models');
 //const { Recipe } = require('../db/models');
+
 const {default: Axios} =require('axios');
 const API_KEY= "7e16571e4a5d4b7e88bb9317652f6767";
 const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?query=udon&apiKey=${API_KEY}`;
@@ -25,8 +26,6 @@ router.get("/search", async (req, res, next) => {
        next(error);
    }   
 });
-
-
 
 
 //A route to fetch all recipes

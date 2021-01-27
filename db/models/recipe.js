@@ -4,12 +4,28 @@ const db = require('../db');
 const Recipe = db.define( 'recipe', {
         name:{
             type: Sequelize.STRING,
-            allowNull: false,
+            
         },
         description: {
             type: Sequelize.TEXT,
-            allowNull: false,
+            
         },
+        ingredients: {
+            type: Sequelize.TEXT,
+            
+        },
+        instructions: {
+            type: Sequelize.TEXT,
+            
+        },
+        cookingTime: {
+            type: Sequelize.TEXT,
+            
+        },
+        imageURL: {
+            type: Sequelize.TEXT,
+            
+        }
     });
 
 module.exports = Recipe;
