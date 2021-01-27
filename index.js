@@ -8,6 +8,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 
+require('dotenv').config();
+
+
 //IMPORTS/VARIABLES
 const PORT = process.env.PORT || 8080;
 const db = require('./db');

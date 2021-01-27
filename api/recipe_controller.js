@@ -4,17 +4,18 @@ const models =require('../db/models');
 //const { Recipe } = require('../db/models');
 
 const {default: Axios} =require('axios');
-const API_KEY= "7e16571e4a5d4b7e88bb9317652f6767";
-const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?query=udon&apiKey=${API_KEY}`;
-//sample api link:
-//https://api.spoonacular.com/recipes/complexSearch?query=pasta&apiKey=7e16571e4a5d4b7e88bb9317652f6767
+
+//const API_KEY= "7e16571e4a5d4b7e88bb9317652f6767";
+const API_KEY= process.env.API_KEY;
+//console.log(process.env);
+const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=5&query=`;
 
 
-//Route to serve up a recipe by query 
-router.get("/search", async (req, res, next) => {
-    //const {product } =req.params;
+//Route to serve up a recipe by product search 
+router.get("/search/:product", async (req, res, next) => {
+    const { product } =req.params;
     let results =[];
-        await Axios.get(RECIPE_API_URL)
+        await Axios.get(`${RECIPE_API_URL}${product}`)
         .then((getResult) => getResult.data.results)
         .then ((response) => {
             results =response;
