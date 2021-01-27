@@ -1,8 +1,6 @@
 const db = require('./db');
 
-const { User } = require('./db/models');
-const Recipe = require('./db/models/recipe');
-
+const { User, Recipe, Ingredient } = require('./db/models');
 
 
 const seedDatabase = async() => {
@@ -73,7 +71,7 @@ const seedDatabase = async() => {
     instruction: "Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis. Sed ante. Vivamus tortor. Duis mattis egestas metus.",
     cookingTime: "14",
     imageURL: "http://t-online.de/sapien.xml?a=penatibus&odio=et&in=magnis&hac", 
-   })
+   }),
   ])
 }
 
