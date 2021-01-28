@@ -2,14 +2,13 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require('bcrypt');
-//const  { User }= require('../db/models');
-const models =require('../db/models');
+const  { User }= require('../db/models');
 
 // Express Routes for Users - Read more on routing at https://expressjs.com/en/guide/routing.html
 // A route to fetch all users
 router.get('/', async (req, res, next) => {
   try {
-    const allUsers = await models.User.findAll();
+    const allUsers = await User.findAll();
     // An if/ternary statement to handle not finding allPlayers explicitly
     !allUsers
       ? res.status(404).send('Users Listing is Not Found')
@@ -18,25 +17,6 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
-//a route to update a user
-//same as the put method above to update a user but not working properly.
-/*router.put('/:id', async (req, res, next) => {
-    try {
-        const user=await models.User.findByPk(req.params.id)
-        if (!user) {
-            res.status(404).send('user not found');
-            await user.update(req.body);
-        }
-            
-    } catch (error) {
-        next(error);
-        
-    }
-}); 
-*/
-
-
-
 
 // a route to register the user in our database
 router.post('/register', async (req, res, next) => {
@@ -44,7 +24,7 @@ router.post('/register', async (req, res, next) => {
         const {firstName, lastName, email, password} = req.body;
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
-        const user = await models.User.create({
+        const user = await User.create({
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -59,7 +39,7 @@ router.post('/register', async (req, res, next) => {
 // a route to log the user in
 router.post('/login', async (req, res, next) => {     
         const {email, password} = req.body;
-        const user = await models.User.findOne({ where: {
+        const user = await User.findOne({ where: {
             email: email,
         }}) 
         if(!user){
@@ -76,9 +56,24 @@ router.post('/login', async (req, res, next) => {
     }
 })
 
-//A route to fetch a single user
-router.get('/:name', (req, res, next) => {
-    models.User.findone(req.params.name)
+//A route to fetch a single user by user email
+router.get('/:email', async (req, res, next) => {
+    try {
+      const user = await User.findOne({where: 
+        { email: req.params.email },
+          plain:true });
+      // An if/ternary statement to handle not finding recipe explicitly
+      !user
+        ? res.status(404).send('User Not Found') 
+        :res.status(200).json({ message: "User is found ", user});
+    } catch (error) {
+      next(error);
+    }
+  });
+
+//A route to fetch a single user by user id
+router.get('/:id', (req, res, next) => {
+    User.findOne(req.params.id)
     .then(user => {
         if(!user)
         res.status(404)
@@ -101,27 +96,8 @@ router.get('/:name', (req, res, next) => {
     })
 })
 
-//a route to update a user
-//same as the put method below to update a user but not working properly.
-/*router.put('/:id', async (req, res, next) => {
-    try {
-        const user=await models.User.findByPk(req.params.id)
-        if (!user) {
-            res.status(404).send('user not found');
-            await user.update(req.body);
-        }
-            
-    } catch (error) {
-        next(error);
-        
-    }
-}); 
-*/
-
-
-
 router.put('/:id', (req, res, next) =>{
-    models.User.findByPk(req.params.id)
+    User.findByPk(req.params.id)
     .then(user => {
         if(!user )
         res.status(404)
@@ -157,7 +133,7 @@ router.put('/:id', (req, res, next) =>{
 
 // A route to delete a recipe 
 router.delete('/:id', (req, res, next) => {
-    models.User.findByPk(req.params.id)
+    User.findByPk(req.params.id)
     .then (user => {
         if(!user)
         res.status(404)
@@ -179,6 +155,7 @@ router.delete('/:id', (req, res, next) => {
         });
     });
 });
-//latest copy of user routes
+
+
 // Export our router, so that it can be imported to construct our api routes
 module.exports = router;
