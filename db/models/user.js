@@ -19,7 +19,11 @@ const User = db.define('user', {
     password: {
         type: Sequelize.TEXT,
         
-    }, 
+    },
+    sessionId:{
+        type: Sequelize.STRING,
+        unique: true
+    } 
     
 })
 
