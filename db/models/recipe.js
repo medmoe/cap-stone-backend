@@ -4,26 +4,22 @@ const db = require('../db');
 const Recipe = db.define( 'recipe', {
         name:{
             type: Sequelize.STRING,
-            
+            allowNull: false,
         },
-        description: {
+        category: {
             type: Sequelize.TEXT,
-            
+            allowNull: false
         },
-        ingredient: {
+        area: {
             type: Sequelize.TEXT,
-            
+            allowNull:false
         },
         instructions: {
             type: Sequelize.TEXT,
-            
+            allowNull: false
         },
-        cookingTime: {
-            type: Sequelize.TEXT,
-        },
-        imageURL: {
-            type: Sequelize.TEXT,
-            
+        image: {
+            type: Sequelize.STRING,
         }
     });
 

@@ -6,6 +6,8 @@ const compression = require('compression');
 const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
+const request = require('request');
+const models = require('./db/models');
 
 
 require('dotenv').config();
@@ -57,7 +59,10 @@ const serverRun = () => {
 
 //check if the database is connected
 db.authenticate()
-  .then(() => console.log("database is connected"))
+  .then(() => {
+    console.log("database is connected");
+    // fetch recipes by first letter and store them in database
+  })
   .catch(error => console.log(error));
   
 const syncDb = () => {
@@ -79,7 +84,6 @@ const syncDb = () => {
       });
     }
 };
-
 //Run server and sync DB
 syncDb();
 serverRun();
