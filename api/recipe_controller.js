@@ -1,9 +1,14 @@
 const express =require('express');
 const router =express.Router();
 
+const { Recipe, User } = require('../db/models');
+//const {default: Axios} =require('axios');
+
+
 const models =require('../db/models');
 const request = require('request');
 //const { Recipe } = require('../db/models');
+
 
 const API_KEY= process.env.API_KEY;
 const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
