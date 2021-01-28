@@ -3,9 +3,10 @@ const db = require('../db');
 
 
 const Ingredient = db.define('ingredient', {
+    
     ingredient_name: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
     }
 
 })
