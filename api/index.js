@@ -1,9 +1,8 @@
 const router = require('express').Router();
-module.exports = router;
+//module.exports = router;
 
-// Mounts players api calls from api file on /api/players
+// Mounts recipes, users api calls from api file on /api/players
 //router.use('/players', require('./players'));
-//router.use('/recipeSearch', require('./recipe_controller'));
 router.use('/recipes', require('./recipe_controller'));
 router.use ('/users', require('./user_controller'));
 //Anythingn not found gets a 404
@@ -14,3 +13,4 @@ router.use((req, res, next) => {
 });
 
 //Export our api so we can use it on our server index file(main exit point for server)
+module.exports = router;

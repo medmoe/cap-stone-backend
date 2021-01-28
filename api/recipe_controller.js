@@ -14,7 +14,6 @@ router.get('/search/:product', async (req, res, next) => {
     //console.log(req.params);
     let results =[];
         await Axios.get(`${RECIPE_API_URL}${product}`)
-        //console.log("after axios");
         .then((getResult) => getResult.data.results)
         .then ((response) => {
             results =response;
@@ -27,37 +26,38 @@ router.get('/search/:product', async (req, res, next) => {
        next(error);
    }   
 });
-
-//A route to fetch all recipes
-router.get('/', (req, res, next) =>  {
-    Recipe.findAll()
-    .then(recipes => {
-        res.status(200)
-        .json({
-            message: "Sucessfully find all recipes",
-            recipes
-        });
-    })
-    .catch(err => {
-        res.status(404)
-        .json({
-            message: "error, unable to fetch recipes",
-            err
-        });
-    });
-});
-
-//A route to fetch a single recipe
-router.get('/:name', async (req, res, next) => {
+////A route to fetch all recipes
+router.get('/', async (req, res, next) => {
     try {
-      const recipe = await Recipe.findOne({where: 
-        { name: req.params.name },
-          plain:true });
-      // An if/ternary statement to handle not finding recipe explicitly
-      !recipe
-        ? res.status(404).send('Recipe Not Found') 
-        //: res.status(200).json(recipe);
-        :res.status(200).json({ message: "Recipe is found ", recipe});
+        const allRecipes = await Recipe.findAll();
+        !allRecipes
+            ? res.status(404).send('Recipe Listings is Not Found')
+            : res.status(200).json({message: "Here are the recipe listings ", allRecipes});
+    } catch (error) {
+      next(error);
+    }
+  });
+ 
+//A route to fetch a single recipe by recipe name
+router.get('/recipename/:name', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findOne({where: 
+            { name: req.params.name }});
+       !recipe
+            ? res.status(404).send('Recipe is not found.') 
+            :res.status(200).json(recipe);
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  //A route to fetch a single recipe by recipe id
+  router.get('/recipeid/:id', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findByPk(req.params.id);
+        !recipe
+            ? res.status(404).send('Recipe Not Found') 
+            :res.status(200).json(recipe);
     } catch (error) {
       next(error);
     }
@@ -65,16 +65,22 @@ router.get('/:name', async (req, res, next) => {
 
 
 //A route to add a new recipe by recipe name
-router.post('/add/:recipename', async (req, res, next) => {
+router.post('/add/:name', async (req, res, next) => {
     try {
-      const newRecipe = await Recipe.findOrCreate({where: 
-        { name: req.params.recipename },
-        });
-      // An if/ternary statement to handle not able to add the recipe explicitly
-        !newRecipe
-            ? res.status(404).send('Recipe is not created') 
-            //: res.status(200).json(recipe);
-            :res.status(200).json({ message: "Recipe is create ", newRecipe});
+        const newRecipe = await Recipe.findOrCreate({where: 
+            {name: req.params.name,
+             description: req.body.description,
+             ingredient: req.body.ingredient,
+             instructions: req.body.instructions,
+             cookingTime: req.body.cookingTime,
+             imageURL: req.body.imageURL },
+        })
+
+        const [ result, created ] = newRecipe;
+        !created
+            ? res.status(404).send({message: "Recipe not added, already exists in the database", newRecipe})
+            : res.status(200).json({ message: "Recipe is added ", newRecipe}); 
+
     } catch (error) {
             next(error);
     }
@@ -83,63 +89,41 @@ router.post('/add/:recipename', async (req, res, next) => {
 //a route to update a recipe by recipe id 
 router.put('/update/:id', async (req, res, next) => {
     try {
-      const updatedRecipe = await Recipe.findByPk(req.params.id );
-      // An if/ternary statement to handle not able to add the recipe explicitly
+        const updatedRecipe = await Recipe.findByPk(req.params.id );
         !updatedRecipe
             ? res.status(404).send('No such recipe exists') 
-            //: res.status(200).json(recipe);
-            :deletedRecipe.destroy(); 
-            res.status(200).json({ message: "Recipe is deleted"});
+            : (await updatedRecipe.update(req.body, {return: true}),
+                res.status(200).json({ message: "Recipe info is updated. ", updatedRecipe}));
     } catch (error) {
             next(error);
     }
   });
 
-//a route to update a recipe by recipe id
-router.put ('/:id', (req, res, next) => {
-    Recipe.findByPk(req.params.id)
-    .then(recipe => {
-        if(!recipe )
-        res.status(404)
-        .json({
-            message: "recipe not found"
-        });
-
-        recipe.update({
-        name: req.body.name,
-        description: req.body.description
-        });
-
-        recipe.save();
-
-        res.status (200)
-        .json({
-            message: "Recipe is updated",
-            recipe
-        });            
-    })
-    .catch(err => {
-        res.status(500)
-        .json({
-            message: " An erro has occured!",
-            err
-        });
-    });
-});
+  //a route to update a recipe by recipe name
+router.put('/updaterecipe/:name', async (req, res, next) => {
+    try {
+        const updatedRecipe = await Recipe.findOne({where: 
+            { name: req.params.name }});
+        !updatedRecipe
+            ? res.status(404).send('No such recipe exists') 
+            : (await updatedRecipe.update(req.body, {return: true}),
+                res.status(200).json({ message: "Recipe info is updated. ", updatedRecipe}));
+    } catch (error) {
+            next(error);
+    }
+  });
 
 //a route to delete a recipe by recipe name
-router.delete('/delete/:recipename', async (req, res, next) => {
+router.delete('/delete/:name', async (req, res, next) => {
     try {
-      const deletedRecipe = await Recipe.findOne(
-          {where: 
-            { name: req.params.recipename }
-          });
-      // An if/ternary statement to handle not able to add the recipe explicitly
+        const deletedRecipe = await Recipe.findOne(
+            {where: 
+                { name: req.params.name }
+            });
         !deletedRecipe
-            ? res.status(404).send('No such recipe exists') 
-            //: res.status(200).json(recipe);
-            :deletedRecipe.destroy(); 
-            res.status(200).json({ message: "Recipe is deleted"});
+            ? res.status(404).send('No such recipe exists')
+            : (await deletedRecipe.destroy(), 
+                res.status(200).json({ message: "Recipe is deleted"}));
     } catch (error) {
             next(error);
     }
@@ -148,13 +132,11 @@ router.delete('/delete/:recipename', async (req, res, next) => {
   //a route to delete a recipe by recipe id
   router.delete('/deletebyid/:id', async (req, res, next) => {
     try {
-      const deletedRecipe = await Recipe.findByPk(req.params.id );
-      // An if/ternary statement to handle not able to add the recipe explicitly
-        !deletedRecipe
-            ? res.status(404).send('No such recipe exists') 
-            //: res.status(200).json(recipe);
-            :deletedRecipe.destroy(); 
-            res.status(200).json({ message: "Recipe is deleted"});
+      const deletedRecipe = await Recipe.findByPk(req.params.id);
+      !deletedRecipe
+        ? res.status(404).send('No such recipe exists') 
+        : (deletedRecipe.destroy(), 
+            res.status(200).json({ message: "Recipe is deleted"}));
     } catch (error) {
             next(error);
     }
