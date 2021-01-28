@@ -170,6 +170,7 @@ router.delete('/deletebyid/:id', async (req, res, next) => {
 }); 
 
  // A route to delete a user's single recipe base on given recipe id and logged on user
+ // need to change, need working
  router.delete('/deletebyid/:id', async (req, res, next) => {
     try {
         const deletedUser = await User.findByPk(req.params.id);
