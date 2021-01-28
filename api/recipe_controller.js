@@ -1,6 +1,6 @@
 const express =require('express');
 const router =express.Router();
-const { Recipe } = require('../db/models');
+const { Recipe, User } = require('../db/models');
 //const {default: Axios} =require('axios');
 
 const API_KEY= process.env.API_KEY;

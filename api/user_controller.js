@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const bcrypt = require('bcrypt');
-const  { User }= require('../db/models');
+const  { User, Recipe }= require('../db/models');
 
 // A route to fetch all users
 router.get('/', async (req, res, next) => {
@@ -68,6 +68,23 @@ router.get('/useremail/:email', async (req, res, next) => {
     }
   });
 
+//A route to fetch all recipes of a user by user email
+router.get('/userallrecipes/:email', async (req, res, next) => {
+    try {
+        const user = await User.findOne({where: 
+            { email: req.params.email },
+                include: [{
+                    model: Recipe
+                }]
+            })
+        !user
+            ? res.status(404).send('User Not Found') 
+            : res.status(200).json({ message: "User is found ", user});
+    } catch (error) {
+      next(error);
+    }
+  });
+
 //A route to fetch a single user by id
 router.get('/userid/:id', async (req, res, next) => {
     try {
@@ -80,6 +97,21 @@ router.get('/userid/:id', async (req, res, next) => {
     }
   });
 
+//A route to fetch all recipes associated with a user by user id
+router.get('/useridallrecipes/:id', async (req, res, next) => {
+    try {
+        const user = await User.findByPk(req.params.id,
+           {include: Recipe })
+            //{include: [{ model: Recipe}]})
+
+        !user
+            ? res.status(404).send('User Not Found') 
+            : res.status(200).json({ message: "User is found ", user});
+    } catch (error) {
+      next(error);
+    }
+  }); 
+  
 //a route to update a user by email
 router.put('/updateuser/:email', async (req, res, next) => {
     try {
@@ -126,6 +158,19 @@ router.delete('/delete/:email', async (req, res, next) => {
  
  // A route to delete a user by id
 router.delete('/deletebyid/:id', async (req, res, next) => {
+    try {
+        const deletedUser = await User.findByPk(req.params.id);
+        !deletedUser
+            ? res.status(404).send('No such user exists')
+            : (await deletedUser.destroy(), 
+               res.status(200).json({ message: "User is deleted"}));
+    } catch (error) {
+            next(error);
+    }
+}); 
+
+ // A route to delete a user's single recipe base on given recipe id and logged on user
+ router.delete('/deletebyid/:id', async (req, res, next) => {
     try {
         const deletedUser = await User.findByPk(req.params.id);
         !deletedUser
