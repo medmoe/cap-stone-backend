@@ -3,7 +3,8 @@ const router = express.Router();
 
 const bcrypt = require('bcrypt');
 const  { User, Recipe }= require('../db/models');
-
+const db = require('../db/db');
+const Sequelize = require('sequelize');
 // A route to fetch all users
 router.get('/', async (req, res, next) => {
   try {
@@ -15,8 +16,44 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+router.get("/login", (req, res) => {
+	console.log(req.session);
+	console.log("in get route", req.session.user);
 
-// a route to register the user in our database
+	if (req.session.user) {
+		res.send({ loggedIn: true, user: req.session.user });
+	} else {
+		res.send({ loggedIn: false });
+	}
+});
+
+// router.post("/login", async (req, res, next) => {
+// 	const { email, password } = req.body;
+// 	const user = await models.User.findOne({
+// 		where: {
+// 			email: email,
+// 		},
+// 	});
+
+// 	if (!user) {
+// 		return res.status(400).send("Cannot find user");
+// 	}
+// 	try {
+// 		if (await bcrypt.compare(password, user.password)) {
+// 			req.session.user = user;
+// 			req.session.save();
+// 			console.log(req.sessionID);
+// 			res.send({ loggedIn: true, user: req.session.user });
+// 		} else {
+// 			res.send("not allowed");
+// 		}
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// });
+
+
+//a route to register the user in our database
 router.post('/register', async (req, res, next) => {
     try {
         const {firstName, lastName, email, password} = req.body;
@@ -28,31 +65,60 @@ router.post('/register', async (req, res, next) => {
             email: email,
             password: hashedPassword
         })
-        console.log(user);
         res.json(user);
     } catch {
         res.status(500).send();
     }
 })
-// a route to log the user in
-router.post('/login', async (req, res, next) => {     
-        const {email, password} = req.body;
-        const user = await User.findOne({ where: {
-            email: email,
-        }}) 
-        if(!user){
-            return res.status(400).send('Cannot find user');
-        }
-    try{
-        if(await bcrypt.compare(password, user.password)){
-            res.send('you logged in successfuly');
-        }else{
-            res.send("not allowed");
-        }
-    } catch (error) {
-        console.log(error);
-    }
-})
+router.post("/login", async (req, res, next) => {
+	const { email, password } = req.body;
+	const user = await User.findOne({
+		where: {
+			email: email,
+		},
+	});
+
+	if (!user) {
+		return res.status(400).send("Cannot find user");
+	}
+	try {
+		if (await bcrypt.compare(password, user.password)) {
+			req.session.user = user;
+            req.session.save();
+            //add session id to database
+            let query = "update users set session_id=:session where id =:userid";
+            const users = await db.query(query, {
+                replacements: {userid: user.dataValues.id, session: req.sessionID},
+                type: Sequelize.QueryTypes.UPDATE
+            });
+			res.send({ loggedIn: true, user: req.session.user });
+		} else {
+			res.send("not allowed");
+		}
+	} catch (error) {
+		console.log(error);
+	}
+});
+
+//a route to log the user in
+// router.post('/login', async (req, res, next) => {     
+//         const {email, password} = req.body;
+//         const user = await User.findOne({ where: {
+//             email: email,
+//         }}) 
+//         if(!user){
+//             return res.status(400).send('Cannot find user');
+//         }
+//     try{
+//         if(await bcrypt.compare(password, user.password)){
+//             res.send('you logged in successfuly');
+//         }else{
+//             res.send("not allowed");
+//         }
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
 
 //A route to fetch a single user by user email
 router.get('/useremail/:email', async (req, res, next) => {

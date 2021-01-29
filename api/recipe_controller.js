@@ -2,28 +2,24 @@ const express =require('express');
 const router =express.Router();
 
 const { Recipe, User } = require('../db/models');
-//const {default: Axios} =require('axios');
-
+const db = require('../db/db');
+const Sequelize = require('sequelize');
 
 const models =require('../db/models');
 const request = require('request');
-//const { Recipe } = require('../db/models');
-
-
-const API_KEY= process.env.API_KEY;
-const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
 
 
 let rps = [];
-let ingredients = [];
+;
 //if you want to find more recipes just add letters to the variable 'word'
-let word = "ab";
+let word = "a";
 for(let i = 0; i < word.length; i++){
         request(`https://www.themealdb.com/api/json/v1/1/search.php?f=${word.charAt(i)}`,  (error, response, body) =>{
                     if(error){
                         console.log(error);
                     }else{
                         JSON.parse(body).meals.forEach(element => {
+                            let ingredients = [];
                             let {strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9} = element;
                             ingredients.push(strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9);
                             let recipe = {
@@ -50,20 +46,11 @@ router.post('/', (req, res, next) => {
                 category: element.category,
                 area: element.area,
                 instructions: element.instructions,
+                all_ingredients: element.ingredients.join(','),
                 image: element.image,
             }
             //store the recipe object in recipes table
             let recipe = await models.Recipe.create(r);
-            //a for loop to create ingredients objects for the recipe created
-            for(let i = 0; i < element.ingredients.length; i++){
-                let ing = {
-                    ingredient_name: element.ingredients[i]
-                }
-                //store the ingredient object in the ingredients table
-                let ingredient = await models.Ingredient.create(ing);
-                //assossiate ingredients with recipes
-                await recipe.addIngredient(ingredient);
-            }
         })
         
         res.status(200).send();
@@ -97,7 +84,9 @@ router.get('/search/:product', async (req, res, next) => {
 ////A route to fetch all recipes
 router.get('/', async (req, res, next) => {
     try {
-        const allRecipes = await Recipe.findAll();
+        let query = "select * from recipes INNER JOIN recipe_ingredient ON recipes.id = recipe_ingredient.recipe_id INNER JOIN ingredients ON recipe_ingredient.ingredient_id = ingredients.id;"
+        const allRecipes = await db.query(query);
+        //const allRecipes = await Recipe.findAll();
         !allRecipes
             ? res.status(404).send('Recipe Listings is Not Found')
             : res.status(200).json({message: "Here are the recipe listings ", allRecipes});

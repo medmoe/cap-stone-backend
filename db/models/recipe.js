@@ -18,6 +18,10 @@ const Recipe = db.define( 'recipe', {
             type: Sequelize.TEXT,
             allowNull: false
         },
+        all_ingredients: {
+            type: Sequelize.TEXT,
+            allowNull: false
+        },
         image: {
             type: Sequelize.STRING,
         }
