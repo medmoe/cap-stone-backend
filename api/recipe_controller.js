@@ -134,7 +134,7 @@ router.post('/add/:name', async (req, res, next) => {
              category: req.body.category,
              area: req.body.area,
              instructions: req.body.instructions,
-             all_ingredients: req.body, instructions,
+             all_ingredients: req.body.instructions,
              image: req.body.image },
         })
 
