@@ -122,19 +122,73 @@ router.post("/login", async (req, res, next) => {
 //     }
 // })
 
+//A route to fetch a user's session id  by user email
+router.get('/sessionid/:email', async (req, res, next) => {
+  try {
+      const user = await User.findOne({where: 
+          { email: req.params.email }
+      });
+      //const {email, session_id} = user;
+      const result =user.session_id;
+      //const result =user.email;
+      //checking if session object return is empty or not
+      if (result !== undefined && result!== null && result !== "") {
+         res.status(200).json({ message: "User's session id: ", result});
+      } else {
+        //need another status code, not the right code 
+        res.status(403).send('user does not have session id')
+      }
+  } catch (error) {
+    next(error);
+  }
+}); 
+
+//A route to fetch a single user's session id  by user id
+router.get('/sessionid/:id', async (req, res, next) => {
+  try {
+      const user = await User.findByPk( req.params.id);
+      //const {id, session_id} = user;
+      const result =user.session_id;
+      //checking if session object return is empty or not
+      if (result !== undefined && result!== null && result !== "") {
+         res.status(200).json({ message: "User's id is: ", result});
+      } else {
+        res.send('user does not have session id')
+      }
+  } catch (error) {
+    next(error);
+  }
+});
+
 //A route to fetch a single user by user email
 router.get('/useremail/:email', async (req, res, next) => {
     try {
         const user = await User.findOne({where: 
             { email: req.params.email }
         });
+        //const {email, session_id} = user;
         !user
             ? res.status(404).send('User Not Found') 
-            : res.status(200).json({ message: "User is found ", user});
+            : res.status(200).json({ message: "User is found ", email});
     } catch (error) {
       next(error);
     }
   });
+
+
+//A route to fetch a single user by id
+router.get('/userid/:id', async (req, res, next) => {
+  try {
+      const user = await User.findByPk( req.params.id);
+      !user
+          ? res.status(404).send('User Not Found') 
+          : res.status(200).json({ message: "User is found ", user});
+  } catch (error) {
+    next(error);
+  }
+});
+
+ 
 
 //A route to fetch all recipes of a user by user email
 router.get('/userallrecipes/:email', async (req, res, next) => {
@@ -153,17 +207,6 @@ router.get('/userallrecipes/:email', async (req, res, next) => {
     }
   });
 
-//A route to fetch a single user by id
-router.get('/userid/:id', async (req, res, next) => {
-    try {
-        const user = await User.findByPk( req.params.id);
-        !user
-            ? res.status(404).send('User Not Found') 
-            : res.status(200).json({ message: "User is found ", user});
-    } catch (error) {
-      next(error);
-    }
-  });
 
 //A route to fetch all recipes associated with a user by user id
 router.get('/useridallrecipes/:id', async (req, res, next) => {
@@ -184,7 +227,7 @@ router.get('/useridallrecipes/:id', async (req, res, next) => {
 router.put('/updateuser/:email', async (req, res, next) => {
     try {
         const updatedUser = await User.findOne({where: 
-            { email: req.params.email }});
+            { email: req.params.email }}); 
         !updatedUser
             ? res.status(404).send('No such user exists') 
             : (await updatedUser.update(req.body, {return: true}),
@@ -242,6 +285,7 @@ router.delete('/deletebyid/:id', async (req, res, next) => {
 }); 
 
  // A route to delete a user's single recipe base on given recipe id and logged on user
+ // need to be revised, not working 
  router.delete('/deletebyid/:id', async (req, res, next) => {
     try {
         const deletedUser = await User.findByPk(req.params.id);

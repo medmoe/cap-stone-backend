@@ -89,9 +89,9 @@ router.get('/search/:product', async (req, res, next) => {
 ////A route to fetch all recipes
 router.get('/', async (req, res, next) => {
     try {
-        let query = "select * from recipes INNER JOIN recipe_ingredient ON recipes.id = recipe_ingredient.recipe_id INNER JOIN ingredients ON recipe_ingredient.ingredient_id = ingredients.id;"
-        const allRecipes = await db.query(query);
-        //const allRecipes = await Recipe.findAll();
+        //let query = "select * from recipes INNER JOIN recipe_ingredient ON recipes.id = recipe_ingredient.recipe_id INNER JOIN ingredients ON recipe_ingredient.ingredient_id = ingredients.id;"
+        //const allRecipes = await db.query(query);
+        const allRecipes = await Recipe.findAll();
         !allRecipes
             ? res.status(404).send('Recipe Listings is Not Found')
             : res.status(200).json({message: "Here are the recipe listings ", allRecipes});
@@ -134,6 +134,7 @@ router.post('/add/:name', async (req, res, next) => {
              category: req.body.category,
              area: req.body.area,
              instructions: req.body.instructions,
+             all_ingredients: req.body, instructions,
              image: req.body.image },
         })
 
