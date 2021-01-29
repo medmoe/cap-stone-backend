@@ -20,7 +20,7 @@ const User = db.define('user', {
         type: Sequelize.TEXT,
         
     },
-    sessionId:{
+    session_id:{
         type: Sequelize.STRING,
         unique: true
     } 
