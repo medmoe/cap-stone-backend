@@ -184,37 +184,48 @@ router.get('/sessionid/:id', async (req, res, next) => {
 
 //A route to fetch a single user by user email
 router.get('/useremail/:email', async (req, res, next) => {
-    try {
-        const user = await User.findOne({where: 
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+      res.status(403).send ("User is not currently logged in.")
+  } else {
+      try {
+          const user = await User.findOne({where: 
             { email: req.params.email }
-        });
-        //const {email, session_id} = user;
-        !user
+          });
+          !user
             ? res.status(404).send('User Not Found') 
             : res.status(200).json({ message: "User is found ", email});
-    } catch (error) {
-      next(error);
-    }
-  });
+      } catch (error) {
+        next(error);
+      }
+  }    
+});
 
 
 //A route to fetch a single user by id
 router.get('/userid/:id', async (req, res, next) => {
-  try {
-      const user = await User.findByPk( req.params.id);
-      !user
-          ? res.status(404).send('User Not Found') 
-          : res.status(200).json({ message: "User is found ", user});
-  } catch (error) {
-    next(error);
-  }
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.") 
+  } else {
+      try {
+          const user = await User.findByPk( req.params.id);
+          !user
+            ? res.status(404).send('User Not Found') 
+            : res.status(200).json({ message: "User is found ", user});
+      } catch (error) {
+        next(error);
+      }
+  }  
 });
-
- 
 
 //A route to fetch all recipes of a user by user email
 router.get('/userallrecipes/:email', async (req, res, next) => {
-    try {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else {
+      try {
         const user = await User.findOne({where: 
             { email: req.params.email },
                 include: [{
@@ -224,77 +235,96 @@ router.get('/userallrecipes/:email', async (req, res, next) => {
         !user
             ? res.status(404).send('User Not Found') 
             : res.status(200).json({ message: "User is found ", user});
-    } catch (error) {
-      next(error);
-    }
+      } catch (error) {
+          next(error);
+      }
+    }  
   });
-
 
 //A route to fetch all recipes associated with a user by user id
 router.get('/useridallrecipes/:id', async (req, res, next) => {
-    try {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else { 
+      try {
         const user = await User.findByPk(req.params.id,
-           {include: Recipe })
-            //{include: [{ model: Recipe}]})
-
+          {include: Recipe })
+          //{include: [{ model: Recipe}]})
         !user
-            ? res.status(404).send('User Not Found') 
-            : res.status(200).json({ message: "User is found ", user});
-    } catch (error) {
-      next(error);
-    }
+          ? res.status(404).send('User Not Found') 
+          : res.status(200).json({ message: "User is found ", user});
+        } catch (error) {
+            next(error);
+        }
+      }
   }); 
   
 //a route to update a user by email
 router.put('/updateuser/:email', async (req, res, next) => {
-    try {
-        const updatedUser = await User.findOne({where: 
-            { email: req.params.email }}); 
-        !updatedUser
-            ? res.status(404).send('No such user exists') 
-            : (await updatedUser.update(req.body, {return: true}),
-                res.status(200).json({ message: "User info is updated. ", updatedUser}));
-    } catch (error) {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else { 
+      try {
+          const updatedUser = await User.findOne({where: 
+              { email: req.params.email }}); 
+          !updatedUser
+              ? res.status(404).send('No such user exists') 
+              : (await updatedUser.update(req.body, {return: true}),
+                  res.status(200).json({ message: "User info is updated. ", updatedUser}));
+      } catch (error) {
             next(error);
-    }
-  });
+      }
+    }  
+});
 
   //a route to update a user by id
 router.put('/updatebyid/:id', async (req, res, next) => {
-    try {
-        const updatedUser = await User.findByPk(req.params.id, {return:true});
-        !updatedUser
-            ? res.status(404).send('No such user exists') 
-            : (await updatedUser.update(req.body, {return: true}),
-                res.status(200).json({ message: "User info is updated. ", updatedUser}));
-    } catch (error) {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else {
+      try {
+          const updatedUser = await User.findByPk(req.params.id, {return:true});
+          !updatedUser
+              ? res.status(404).send('No such user exists') 
+              : (await updatedUser.update(req.body, {return: true}),
+                  res.status(200).json({ message: "User info is updated. ", updatedUser}));
+      } catch (error) {
             next(error);
-    }
+      }
+    }  
   });
 
 
 // A route to delete a user by email
 router.delete('/delete/:email', async (req, res, next) => {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else {
     try {
       const deletedUser = await User.findOne(
-          {where: 
-            { email: req.params.email }
-          });
+            {where: 
+              { email: req.params.email }
+            });
         !deletedUser
             ? res.status(404).send('No such user exists')
             : (await deletedUser.destroy(), 
                 res.status(200).json({ message: "User is deleted"}));
-    } catch (error) {
+      } catch (error) {
             next(error);
+      }
     }
-  });
+});
  
  // A route to delete a user by id
 router.delete('/deletebyid/:id', async (req, res, next) => {
-    //if the user is not log in, delete could not be performed 
-    //if (!req.user) {
-    //    res.status(403).send("user is not curretnly logged in.");
-    //} else {
+  // if the user is not logged in , send a forbidden mesaage
+  if(!req.session.user) {
+    res.status(403).send ("User is not currently logged in.")
+  } else {
         try {
             const deletedUser = await User.findByPk(req.params.id);
             !deletedUser
@@ -304,20 +334,27 @@ router.delete('/deletebyid/:id', async (req, res, next) => {
         } catch (error) {
             next(error);
         }
+  }
 }); 
 
  // A route to delete a user's single recipe base on given recipe id and logged on user
  // need to be revised, not working 
- router.delete('/deletebyid/:id', async (req, res, next) => {
-    try {
-        const deletedUser = await User.findByPk(req.params.id);
-        !deletedUser
-            ? res.status(404).send('No such user exists')
-            : (await deletedUser.destroy(), 
-               res.status(200).json({ message: "User is deleted"}));
-    } catch (error) {
+ 
+ router.delete('/deleterecipe/:id', async (req, res, next) => {
+    // if the user is not logged in , send a forbidden mesaage
+    if(!req.session.user) {
+      res.status(403).send ("User is not currently logged in.")
+    } else {
+        try {
+            const deletedUser = await User.findByPk(req.params.id);
+            !deletedUser
+              ? res.status(404).send('No such user exists')
+              : (await deletedUser.destroy(), 
+                  res.status(200).json({ message: "User is deleted"}));
+        } catch (error) {
             next(error);
-    }
+        }
+    }    
 }); 
 
 module.exports = router;
