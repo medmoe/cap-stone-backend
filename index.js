@@ -8,6 +8,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const request = require('request');
 const models = require('./db/models');
+const session = require('express-session');
 
 
 require('dotenv').config();
@@ -22,7 +23,22 @@ const app = express();
 const seedDatabase = require('./seed.js');
 
 //CORS!
-app.use(cors());
+const corsOptions = {
+	origin: "http://localhost:3000",
+	credentials: true,
+	optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+app.use(
+	session({
+		key: "id",
+		secret: "subscribe",
+		resave: false,
+		saveUninitialized: false,
+	})
+);
+
+
 //BODY PARSER
 app.use(express.urlencoded({extended: false}));
 app.use(bodyParser.json());
