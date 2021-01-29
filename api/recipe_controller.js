@@ -134,12 +134,10 @@ router.post('/add/:name', async (req, res, next) => {
              category: req.body.category,
              area: req.body.area,
              instructions: req.body.instructions,
-             all_ingredients: req.body.instructions,
+             all_ingredients: req.body.all_ingredients,
              image: req.body.image },
         })
-
-
-        const [ result, created ] = newRecipe;
+        
         !created
             ? res.status(404).send({message: "Recipe not added, already exists in the database", newRecipe})
             : res.status(200).json({ message: "Recipe is added ", newRecipe}); 
