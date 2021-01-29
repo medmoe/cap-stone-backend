@@ -19,8 +19,11 @@ const Recipe = db.define( 'recipe', {
             allowNull: false
         },
         all_ingredients: {
+            //type: Sequelize.ARRAY(Sequelize.TEXT),
             type: Sequelize.TEXT,
             allowNull: false
+            //type: Sequelize.ARRAY(Sequelize.TEXT)    
+
         },
         image: {
             type: Sequelize.STRING,
