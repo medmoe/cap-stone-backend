@@ -101,6 +101,28 @@ router.post("/login", async (req, res, next) => {
 		console.log(error);
 	}
 });
+router.post("/logout", async(req, res, next) => {
+    try{
+        const {email} = req.body;
+        const user = await User.findOne({
+            where: {
+                email: email
+            }
+        })
+        if(!user){
+            res.send("access denied");
+        }else{
+            let query = "update users set session_id=null where email=:email";
+            const op = await db.query(query, {
+                replacements: {email: email},
+                type: Sequelize.QueryTypes.UPDATE
+            })
+            res.send("you logged out successfuly");
+        }
+    }catch(error){
+        console.log(error);
+    }
+})
 
 //a route to log the user in
 // router.post('/login', async (req, res, next) => {     
