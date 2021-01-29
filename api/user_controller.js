@@ -123,7 +123,7 @@ router.post("/login", async (req, res, next) => {
 // })
 
 //A route to fetch a user's session id  by user email
-router.get('/sessionid/:email', async (req, res, next) => {
+router.get('/session/:email', async (req, res, next) => {
   try {
       const user = await User.findOne({where: 
           { email: req.params.email }
