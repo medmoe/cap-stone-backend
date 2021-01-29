@@ -4,17 +4,12 @@ const router =express.Router();
 const { Recipe, User } = require('../db/models');
 const db = require('../db/db');
 const Sequelize = require('sequelize');
-//const {default: Axios} =require('axios');
-
 
 const models =require('../db/models');
 const request = require('request');
-//const { Recipe } = require('../db/models');
 
-
-const API_KEY= process.env.API_KEY;
-const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
-
+//const API_KEY= process.env.API_KEY;
+//const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
 
 let rps = [];
 ;
@@ -71,6 +66,7 @@ router.post('/', (req, res, next) => {
 
 //Route to serve up a recipe by product search,
 //result will includes image url, title, ingrediens and description (or summary)
+/*
 router.get('/search/:product', async (req, res, next) => {
     const { product }=req.params;
     console.log(req.params);
@@ -88,12 +84,14 @@ router.get('/search/:product', async (req, res, next) => {
        next(error);
    }   
 });
+*/
+
 ////A route to fetch all recipes
 router.get('/', async (req, res, next) => {
     try {
-        let query = "select * from recipes INNER JOIN recipe_ingredient ON recipes.id = recipe_ingredient.recipe_id INNER JOIN ingredients ON recipe_ingredient.ingredient_id = ingredients.id;"
-        const allRecipes = await db.query(query);
-        //const allRecipes = await Recipe.findAll();
+        //let query = "select * from recipes INNER JOIN recipe_ingredient ON recipes.id = recipe_ingredient.recipe_id INNER JOIN ingredients ON recipe_ingredient.ingredient_id = ingredients.id;"
+        //const allRecipes = await db.query(query);
+        const allRecipes = await Recipe.findAll();
         !allRecipes
             ? res.status(404).send('Recipe Listings is Not Found')
             : res.status(200).json({message: "Here are the recipe listings ", allRecipes});
@@ -133,11 +131,11 @@ router.post('/add/:name', async (req, res, next) => {
     try {
         const newRecipe = await Recipe.findOrCreate({where: 
             {name: req.params.name,
-             description: req.body.description,
-             ingredient: req.body.ingredient,
+             category: req.body.category,
+             area: req.body.area,
              instructions: req.body.instructions,
-             cookingTime: req.body.cookingTime,
-             imageURL: req.body.imageURL },
+             all_ingredients: req.body, instructions,
+             image: req.body.image },
         })
 
 
@@ -196,6 +194,9 @@ router.delete('/delete/:name', async (req, res, next) => {
 
   //a route to delete a recipe by recipe id
   router.delete('/deletebyid/:id', async (req, res, next) => {
+    //if (!req.user) {
+    //    res.status(403).send("user is not curretnly logged in.");
+    //}
     try {
       const deletedRecipe = await Recipe.findByPk(req.params.id);
       !deletedRecipe
