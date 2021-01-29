@@ -158,15 +158,19 @@ router.delete('/delete/:email', async (req, res, next) => {
  
  // A route to delete a user by id
 router.delete('/deletebyid/:id', async (req, res, next) => {
-    try {
-        const deletedUser = await User.findByPk(req.params.id);
-        !deletedUser
-            ? res.status(404).send('No such user exists')
-            : (await deletedUser.destroy(), 
-               res.status(200).json({ message: "User is deleted"}));
-    } catch (error) {
+    //if the user is not log in, delete could not be performed 
+    //if (!req.user) {
+    //    res.status(403).send("user is not curretnly logged in.");
+    //} else {
+        try {
+            const deletedUser = await User.findByPk(req.params.id);
+            !deletedUser
+                ? res.status(404).send('No such user exists')
+                : (await deletedUser.destroy(), 
+                    res.status(200).json({ message: "User is deleted"}));
+        } catch (error) {
             next(error);
-    }
+        }
 }); 
 
  // A route to delete a user's single recipe base on given recipe id and logged on user

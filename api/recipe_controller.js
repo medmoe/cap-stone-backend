@@ -17,7 +17,7 @@ const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=
 let rps = [];
 let ingredients = [];
 //if you want to find more recipes just add letters to the variable 'word'
-let word = "abc";
+let word = "ab";
 for(let i = 0; i < word.length; i++){
         request(`https://www.themealdb.com/api/json/v1/1/search.php?f=${word.charAt(i)}`,  (error, response, body) =>{
                     if(error){
@@ -137,11 +137,10 @@ router.post('/add/:name', async (req, res, next) => {
     try {
         const newRecipe = await Recipe.findOrCreate({where: 
             {name: req.params.name,
-             description: req.body.description,
-             ingredient: req.body.ingredient,
+             category: req.body.category,
+             area: req.body.area,
              instructions: req.body.instructions,
-             cookingTime: req.body.cookingTime,
-             imageURL: req.body.imageURL },
+             image: req.body.image },
         })
 
 
@@ -200,6 +199,9 @@ router.delete('/delete/:name', async (req, res, next) => {
 
   //a route to delete a recipe by recipe id
   router.delete('/deletebyid/:id', async (req, res, next) => {
+    //if (!req.user) {
+    //    res.status(403).send("user is not curretnly logged in.");
+    //}
     try {
       const deletedRecipe = await Recipe.findByPk(req.params.id);
       !deletedRecipe
