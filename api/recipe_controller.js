@@ -8,6 +8,8 @@ const Sequelize = require('sequelize');
 const models =require('../db/models');
 const request = require('request');
 
+//const API_KEY= process.env.API_KEY;
+//const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
 
 let rps = [];
 ;
@@ -64,6 +66,7 @@ router.post('/', (req, res, next) => {
 
 //Route to serve up a recipe by product search,
 //result will includes image url, title, ingrediens and description (or summary)
+/*
 router.get('/search/:product', async (req, res, next) => {
     const { product }=req.params;
     console.log(req.params);
@@ -81,6 +84,8 @@ router.get('/search/:product', async (req, res, next) => {
        next(error);
    }   
 });
+*/
+
 ////A route to fetch all recipes
 router.get('/', async (req, res, next) => {
     try {
