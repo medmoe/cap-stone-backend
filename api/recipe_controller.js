@@ -135,12 +135,72 @@ router.post('/add/:name', async (req, res, next) => {
     //    res.status(403).send ("User is not currently logged in.")
     //} else { 
     try {
-        const { all_ingredients } = req.body
-        //console.log(req.body);
-        //console.log(typeof all_ingredients);
-        const ingredientValue = Object.values(all_ingredients)
-        //console.log (ingredientValue );
-        const ingredientString = ingredientValue.join(',')
+        
+            const { all_ingredients } = req.body
+             //console.log(req.body);
+            //console.log(typeof all_ingredients);
+            const ingredientValue = Object.values(all_ingredients)
+            //console.log (ingredientValue );
+            const ingredientString = ingredientValue.join(',')
+
+            let result = {
+                name: req.params.name,
+                category: req.body.category,
+                area: req.body.area,
+                instructions: req.body.instructions,
+                all_ingredients: ingredientString,
+                //all_ingredients: req.body.all_ingredients,
+                //all_ingredients: ingredientValue,
+                image: req.body.image
+            };
+
+            const newRecipe = await Recipe.findOrCreate({
+            where:
+            {
+                name: req.params.name,
+                //category: req.body.category,
+                //area: req.body.area,
+                //instructions: req.body.instructions,
+                //all_ingredients: ingredientString,
+                //all_ingredients: req.body.all_ingredients,
+                //all_ingredients: ingredientValue,
+                //image: req.body.image
+            },
+            })
+            const [result, created] = newRecipe;
+            //!created
+            //? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+            //: res.status(200).json({ message: "Recipe is added ", newRecipe});
+
+            //find the logged in user, add the recipe
+            const currentUser =await User.findByPk(req.user.id, {include: Recipe});
+
+            await currentUser.addRecipe(newRecipe);
+            res.json(newRecipe);
+
+            !created
+            ? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+            : res.status(200).json({ message: "Recipe is added ", newRecipe });
+
+    } catch (error) {
+        next(error);
+    }
+   
+});
+
+//A route to add a new recipe based on given recipe name while the user is logged in
+router.post('/addrecipe/:name', async (req, res, next) => {
+    // if the user is not logged in , send a forbidden mesaage
+    //if(!req.session.user) {
+    //    res.status(403).send ("User is not currently logged in.")
+    //} else { 
+        try {
+            let { const { all_ingredients } = req.body
+            //console.log(req.body);
+            //console.log(typeof all_ingredients);
+            const ingredientValue = Object.values(all_ingredients)
+            //console.log (ingredientValue );
+            const ingredientString = ingredientValue.join(',')
 
         const newRecipe = await Recipe.findOrCreate({
             where:

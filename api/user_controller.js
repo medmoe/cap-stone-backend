@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const { User, Recipe } = require('../db/models');
 const db = require('../db/db');
 const Sequelize = require('sequelize');
+const { DatabaseError } = require('sequelize');
 
 // A route to fetch all users
 router.get('/', async (req, res, next) => {
