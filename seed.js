@@ -30,9 +30,8 @@ for (let i = 0; i < word.length; i++) {
         }
     });
 }
-const seedDatabase = async() => {
-  await Promise.all([
-          rps.forEach((element) => {
+const seedDatabase = () => {
+          rps.forEach(async (element) => {
               //create a recipe object
               let r = {
                   name: element.name,
@@ -43,9 +42,8 @@ const seedDatabase = async() => {
                   image: element.image,
               }
               //store the recipe object in recipes table
-              let recipe = Recipe.create(r);
+              let recipe = await Recipe.create(r);
           })
-  ])
 }
 
 module.exports = seedDatabase;
