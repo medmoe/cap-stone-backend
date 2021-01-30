@@ -129,12 +129,12 @@ router.get('/recipeid/:id', async (req, res, next) => {
 
 
 //A route to add a new recipe by recipe name
-router.post('/add/:name', async (req, res, next) => {
+router.post('/addrecipe/:name', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    //if(!req.session.user) {
+    if(!user) {
     //    res.status(403).send ("User is not currently logged in.")
-    //} else { 
-    try {
+    } else { 
+        try {
         
             const { all_ingredients } = req.body
              //console.log(req.body);
@@ -157,54 +157,7 @@ router.post('/add/:name', async (req, res, next) => {
             const newRecipe = await Recipe.findOrCreate({
             where:
             {
-                name: req.params.name,
-                //category: req.body.category,
-                //area: req.body.area,
-                //instructions: req.body.instructions,
-                //all_ingredients: ingredientString,
-                //all_ingredients: req.body.all_ingredients,
-                //all_ingredients: ingredientValue,
-                //image: req.body.image
-            },
-            })
-            const [result, created] = newRecipe;
-            //!created
-            //? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-            //: res.status(200).json({ message: "Recipe is added ", newRecipe});
-
-            //find the logged in user, add the recipe
-            const currentUser =await User.findByPk(req.user.id, {include: Recipe});
-
-            await currentUser.addRecipe(newRecipe);
-            res.json(newRecipe);
-
-            !created
-            ? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-            : res.status(200).json({ message: "Recipe is added ", newRecipe });
-
-    } catch (error) {
-        next(error);
-    }
-   
-});
-
-//A route to add a new recipe based on given recipe name while the user is logged in
-router.post('/addrecipe/:name', async (req, res, next) => {
-    // if the user is not logged in , send a forbidden mesaage
-    //if(!req.session.user) {
-    //    res.status(403).send ("User is not currently logged in.")
-    //} else { 
-        try {
-            let { const { all_ingredients } = req.body
-            //console.log(req.body);
-            //console.log(typeof all_ingredients);
-            const ingredientValue = Object.values(all_ingredients)
-            //console.log (ingredientValue );
-            const ingredientString = ingredientValue.join(',')
-
-        const newRecipe = await Recipe.findOrCreate({
-            where:
-            {
+                //conditions that must be met for the model to create an new recipe instance 
                 name: req.params.name,
                 category: req.body.category,
                 area: req.body.area,
@@ -214,22 +167,71 @@ router.post('/addrecipe/:name', async (req, res, next) => {
                 //all_ingredients: ingredientValue,
                 image: req.body.image
             },
-        })
-        const [result, created] = newRecipe;
-        !created
-            ? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-            : res.status(200).json({ message: "Recipe is added ", newRecipe });
+            })
+            const [recipeObj, created] = newRecipe;
+            //!created
+            //? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+            //: res.status(200).json({ message: "Recipe is added ", newRecipe});
 
-    } catch (error) {
+            //find the logged in user, add the recipe
+            const currentUser =await User.findByPk(req.user.id, {include: Recipe});
+
+            const addedRecipe= await currentUser.addRecipe(newRecipe);
+            res.json(addedRecipe);
+
+            !
+            !addedRecipe
+                ? res.status(404).send('Unable to add recipe')
+                : (res.status(200).json({ message: "Recipe info is updated. ", addedRecipe }));
+
+        } catch (error) {
         next(error);
+        }
     }
-    //}    
+});
+
+//A route to add a new recipe based on given recipe name 
+router.post('/add/:name', async (req, res, next) => {
+    // if the user is not logged in , send a forbidden mesaage
+    if(!user) {
+       res.status(403).send ("User is not currently logged in.")
+    } else { 
+        try {
+            const { all_ingredients } = req.body
+            //console.log(req.body);
+            //console.log(typeof all_ingredients);
+            const ingredientValue = Object.values(all_ingredients)
+            //console.log (ingredientValue );
+            const ingredientString = ingredientValue.join(',')
+
+            const newRecipe = await Recipe.findOrCreate({
+                where:
+                 {
+                    name: req.params.name,
+                    category: req.body.category,
+                    area: req.body.area,
+                    instructions: req.body.instructions,
+                    all_ingredients: ingredientString,
+                    //all_ingredients: req.body.all_ingredients,
+                    //all_ingredients: ingredientValue,
+                    image: req.body.image
+                },
+            })
+            const [result, created] = newRecipe;
+            !created
+                ? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+                : res.status(200).json({ message: "Recipe is added ", newRecipe });
+
+        } catch (error) {
+            next(error);
+        } 
+    }
 });
 
 //a route to update a recipe by recipe id 
 router.put('/update/:id', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (!req.session.user) {
+    if (!user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
@@ -247,7 +249,7 @@ router.put('/update/:id', async (req, res, next) => {
 //a route to update a recipe by recipe name
 router.put('/updaterecipe/:name', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (!req.session.user) {
+    if (user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
@@ -269,7 +271,7 @@ router.put('/updaterecipe/:name', async (req, res, next) => {
 
 router.delete('/delete/:name', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (!req.session.user) {
+    if (user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
@@ -291,7 +293,7 @@ router.delete('/delete/:name', async (req, res, next) => {
 //a route to delete a recipe by recipe id
 router.delete('/deletebyid/:id', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (!req.session.user) {
+    if (user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {

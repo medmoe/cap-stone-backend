@@ -27,6 +27,7 @@ const Recipe = db.define( 'recipe', {
         },
         image: {
             type: Sequelize.STRING,
+            defaultValue: "https://www.themealdb.com/images/media/meals/wxywrq1468235067.jpg",
         }
     });
 

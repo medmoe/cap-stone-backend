@@ -169,25 +169,29 @@ router.get('/session/:email', async (req, res, next) => {
 
 //A route to fetch a single user's session id  by user id
 router.get('/sessionid/:id', async (req, res, next) => {
-  try {
-    const user = await User.findByPk(req.params.id);
-    //const {id, session_id} = user;
-    const result = user.session_id;
-    //checking if session object return is empty or not
-    if (result !== undefined && result !== null && result !== "") {
-      res.status(200).json({ message: "User's id is: ", result });
-    } else {
-      res.send('user does not have session id')
+  // if the user is not logged in , send a forbidden mesaage
+
+    try {
+      const user = await User.findByPk(req.params.id);
+      //const {id, session_id} = user;
+      const result = user.session_id;
+      //checking if session object return is empty or not
+      if (result !== undefined && result !== null && result !== "") {
+        res.status(200).json({ message: "User's id is: ", result });
+      } else {
+        res.send('user does not have session id')
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
-  }
+
 });
 
 //A route to fetch a single user by user email
 router.get('/useremail/:email', async (req, res, next) => {
+
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -208,7 +212,7 @@ router.get('/useremail/:email', async (req, res, next) => {
 //A route to fetch a single user by id
 router.get('/userid/:id', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -225,7 +229,7 @@ router.get('/userid/:id', async (req, res, next) => {
 //A route to fetch all recipes of a user by user email
 router.get('/userallrecipes/:email', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -248,7 +252,7 @@ router.get('/userallrecipes/:email', async (req, res, next) => {
 //A route to fetch all recipes associated with a user by user id
 router.get('/useridallrecipes/:id', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -267,7 +271,7 @@ router.get('/useridallrecipes/:id', async (req, res, next) => {
 //a route to update a user by email
 router.put('/updateuser/:email', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -288,7 +292,7 @@ router.put('/updateuser/:email', async (req, res, next) => {
 //a route to update a user by id
 router.put('/updatebyid/:id', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -307,7 +311,7 @@ router.put('/updatebyid/:id', async (req, res, next) => {
 // A route to delete a user by email
 router.delete('/delete/:email', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -329,7 +333,7 @@ router.delete('/delete/:email', async (req, res, next) => {
 // A route to delete a user by id
 router.delete('/deletebyid/:id', async (req, res, next) => {
   // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
+  if (!user) {
     res.status(403).send("User is not currently logged in.")
   } else {
     try {
@@ -344,24 +348,5 @@ router.delete('/deletebyid/:id', async (req, res, next) => {
   }
 });
 
-// A route to delete a user's single recipe base on given recipe id and logged on user
-// need to be revised, not working 
-
-router.delete('/deleterecipe/:id', async (req, res, next) => {
-  // if the user is not logged in , send a forbidden mesaage
-  if (!req.session.user) {
-    res.status(403).send("User is not currently logged in.")
-  } else {
-    try {
-      const deletedUser = await User.findByPk(req.params.id);
-      !deletedUser
-        ? res.status(404).send('No such user exists')
-        : (await deletedUser.destroy(),
-          res.status(200).json({ message: "User is deleted" }));
-    } catch (error) {
-      next(error);
-    }
-  }
-});
 
 module.exports = router;
