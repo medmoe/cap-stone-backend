@@ -24,8 +24,14 @@ router.get("/login/:session_id", async (req, res) => {
     replacements: {session_id: req.params.session_id},
     type: Sequelize.QueryTypes.SELECT
   })
-  console.log(recipes);
-	if (req.session.user) {
+
+  let query2 = " SELECT * FROM users WHERE users.session_id=:sessionid";
+  const user = await db.query(query2, {
+    replacements: {sessionid: req.params.session_id},
+    type: Sequelize.QueryTypes.SELECT
+  })
+	if (user) {
+    console.log("im here");
 		res.send({ loggedIn: true, user: req.session.user, info: recipes });
 	} else {
 		res.send({ loggedIn: false });
