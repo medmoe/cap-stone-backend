@@ -199,10 +199,15 @@ router.post("/login", async (req, res, next) => {
               replacements: { userid: user.dataValues.id, session: req.sessionID },
               type: Sequelize.QueryTypes.UPDATE,
           });
+          //get all recipes
+          const recipes = await User.findAll({
+            include: Recipe
+          })
           res.send({
               loggedIn: true,
               user: req.session.user,
               sessionID: req.sessionID,
+              recipes: recipes
           });
       } else {
           res.send("not allowed");
