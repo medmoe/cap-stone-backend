@@ -18,24 +18,57 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get("/login/:session_id", async (req, res) => {
-  let query = "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;"
-  const recipes = await db.query(query, {
-    replacements: {session_id: req.params.session_id},
-    type: Sequelize.QueryTypes.SELECT
-  })
+// router.get("/login/:session_id", async (req, res) => {
+//   let query = "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;"
+//   const recipes = await db.query(query, {
+//     replacements: {session_id: req.params.session_id},
+//     type: Sequelize.QueryTypes.SELECT
+//   })
 
-  let query2 = " SELECT * FROM users WHERE users.session_id=:sessionid";
-  const user = await db.query(query2, {
-    replacements: {sessionid: req.params.session_id},
-    type: Sequelize.QueryTypes.SELECT
-  })
-	if (user) {
-    console.log("im here");
-		res.send({ loggedIn: true, user: req.session.user, info: recipes });
-	} else {
-		res.send({ loggedIn: false });
-	}
+//   let query2 = " SELECT * FROM users WHERE users.session_id=:sessionid";
+//   const user = await db.query(query2, {
+//     replacements: {sessionid: req.params.session_id},
+//     type: Sequelize.QueryTypes.SELECT
+//   })
+// 	if (user) {
+//     console.log("im here");
+//     console.log(user);
+// 		res.send({ loggedIn: true, user: req.session.user, info: recipes });
+// 	} else {
+// 		res.send({ loggedIn: false });
+// 	}
+// });
+router.get("/login/:session_id", async (req, res) => {
+  console.log(req.params.session_id);
+  if (req.params.session_id === null) {
+      // let query =
+      //     "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+      // const recipes = await db.query(query, {
+      //     replacements: { session_id: req.params.session_id },
+      //     type: Sequelize.QueryTypes.SELECT,
+      // });
+      console.log("good");
+      res.send("bad");
+  } else {
+      console.log("here");
+      const user = await User.findOne({
+          where: {
+              session_id: req.params.session_id,
+          },
+      });
+      if (user) {
+          console.log(user);
+          res.send({ loggedIn: true, user: user });
+      } else {
+          res.send({ loggedIn: false });
+      }
+  }
+
+  // let query2 = " SELECT * FROM users WHERE users.session_id=:sessionid";
+  // const user = await db.query(query2, {
+  //     replacements: { sessionid: req.params.session_id },
+  //     type: Sequelize.QueryTypes.SELECT,
+  // });
 });
 
 // router.post("/login", async (req, res, next) => {
@@ -82,34 +115,67 @@ router.post('/register', async (req, res, next) => {
     }
 })
 router.post("/login", async (req, res, next) => {
-	const { email, password } = req.body;
-	const user = await User.findOne({
-		where: {
-			email: email,
-		},
-	});
+  const { email, password } = req.body;
+  const user = await User.findOne({
+      where: {
+          email: email,
+      },
+  });
 
-	if (!user) {
-		return res.status(400).send("Cannot find user");
-	}
-	try {
-		if (await bcrypt.compare(password, user.password)) {
-			req.session.user = user;
-            req.session.save();
-            //add session id to database
-            let query = "update users set session_id=:session where id =:userid";
-            const users = await db.query(query, {
-                replacements: {userid: user.dataValues.id, session: req.sessionID},
-                type: Sequelize.QueryTypes.UPDATE
-            });
-			res.send({ loggedIn: true, user: req.session.user });
-		} else {
-			res.send("not allowed");
-		}
-	} catch (error) {
-		console.log(error);
-	}
+  if (!user) {
+      return res.status(400).send("Cannot find user");
+  }
+  try {
+      if (await bcrypt.compare(password, user.password)) {
+          req.session.user = user;
+          req.session.save();
+          //add session id to database
+          let query = "update users set session_id=:session where id =:userid";
+          const users = await db.query(query, {
+              replacements: { userid: user.dataValues.id, session: req.sessionID },
+              type: Sequelize.QueryTypes.UPDATE,
+          });
+          res.send({
+              loggedIn: true,
+              user: req.session.user,
+              sessionID: req.sessionID,
+          });
+      } else {
+          res.send("not allowed");
+      }
+  } catch (error) {
+      console.log(error);
+  }
 });
+// router.post("/login", async (req, res, next) => {
+// 	const { email, password } = req.body;
+// 	const user = await User.findOne({
+// 		where: {
+// 			email: email,
+// 		},
+// 	});
+
+// 	if (!user) {
+// 		return res.status(400).send("Cannot find user");
+// 	}
+// 	try {
+// 		if (await bcrypt.compare(password, user.password)) {
+// 			req.session.user = user;
+//             req.session.save();
+//             //add session id to database
+//             let query = "update users set session_id=:session where id =:userid";
+//             const users = await db.query(query, {
+//                 replacements: {userid: user.dataValues.id, session: req.sessionID},
+//                 type: Sequelize.QueryTypes.UPDATE
+//             });
+// 			res.send({ loggedIn: true, user: req.session.user });
+// 		} else {
+// 			res.send("not allowed");
+// 		}
+// 	} catch (error) {
+// 		console.log(error);
+// 	}
+// });
 router.post("/logout", async(req, res, next) => {
     try{
         const {email} = req.body;
