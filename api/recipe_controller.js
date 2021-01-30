@@ -78,6 +78,36 @@ router.get('/recipeid/:id', async (req, res, next) => {
     }
 });
 
+//A ROUTE TO SEARCH MULTIPLE RECIPES BY CATEGORY
+router.get('/recipecategory/:category', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findAll({
+            where:
+                {category: req.params.category}
+        });
+        !recipe
+            ? res.status(404).send('Category does not exist')
+            : res.status(200).json(recipe)
+    } catch (error) {
+        next(error);
+    }
+})
+
+//A ROUTE TO SEARCH MULTIPLE RECIPES BY AREA
+router.get('/recipearea/:area', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findAll({
+            where: 
+                {area: req.params.area}
+        });
+        !recipe
+            ? res.status(404).send('Area does not exist')
+            : res.status(200).json(recipe)
+    } catch (error) {
+        next(error);
+    }
+})
+
 
 //A route to add a new recipe by recipe name
 router.post('/addrecipe/:name', async (req, res, next) => {
