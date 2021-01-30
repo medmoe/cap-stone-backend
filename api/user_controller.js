@@ -8,6 +8,10 @@ const Sequelize = require('sequelize');
 const { DatabaseError } = require('sequelize');
 
 // A route to fetch all users
+
+
+
+
 router.get('/', async (req, res, next) => {
   try {
     const allUsers = await User.findAll();
@@ -18,6 +22,11 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
+
+
+
+
+
 // router.get("/login/:session_id", async (req, res) => {
 //   let query = "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;"
 //   const recipes = await db.query(query, {
@@ -70,6 +79,17 @@ router.get('/', async (req, res, next) => {
   //     type: Sequelize.QueryTypes.SELECT,
   // });
 // });
+
+
+
+
+
+
+
+
+
+
+
 router.get("/login/:session_id", async (req, res) => {
   console.log(req.params.session_id);
   if (req.params.session_id === null) {
@@ -96,6 +116,7 @@ router.get("/login/:session_id", async (req, res) => {
           res.send({ loggedIn: false });
       }
   }
+});
 
   // let query2 = " SELECT * FROM users WHERE users.session_id=:sessionid";
   // const user = await db.query(query2, {
@@ -278,23 +299,21 @@ router.post("/logout", async(req, res, next) => {
                 email: email
             }
         })
-        if(!user){
+          if(!user){
             res.send("access denied");
-        }else{
+          }else{
             let query = "update users set session_id=null where email=:email";
             const op = await db.query(query, {
                 replacements: {email: email},
                 type: Sequelize.QueryTypes.UPDATE
             })
             res.send("you logged out successfuly");
+          }
+        }catch(error) {
+          console.log(error);
         }
-    }catch(error){
-        console.log(error);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-})
+      });
+          
 
 //a route to log the user in
 // router.post('/login', async (req, res, next) => {     
