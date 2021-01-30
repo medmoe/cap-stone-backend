@@ -8,10 +8,6 @@ const Sequelize = require('sequelize');
 const { DatabaseError } = require('sequelize');
 
 // A route to fetch all users
-
-
-
-
 router.get('/', async (req, res, next) => {
   try {
     const allUsers = await User.findAll();
@@ -22,10 +18,6 @@ router.get('/', async (req, res, next) => {
     next(error);
   }
 });
-
-
-
-
 
 // router.get("/login/:session_id", async (req, res) => {
 //   let query = "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;"
@@ -108,10 +100,24 @@ router.get("/login/:session_id", async (req, res) => {
               session_id: req.params.session_id,
           },
       });
-      console.log(user);
+      //get all recipes
+      let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+      const recipes = await db.query(query2, {
+        replacements: {email: email},
+        type: Sequelize.QueryTypes.SELECT
+      })
+      let userInfo = {
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+      }
+      let obj =  {
+        user : userInfo,
+        recipes: recipes
+      }
       if (user) {
           console.log(user);
-          res.send({ loggedIn: true, user: user });
+          res.send({ loggedIn: true, user: obj });
       } else {
           res.send({ loggedIn: false });
       }
@@ -161,17 +167,27 @@ router.post("/register", async (req, res, next) => {
           session_id: req.sessionID,
           password: hashedPassword,
       });
-      console.log("new user", user);
+      //get all recipes
+      let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+      const recipes = await db.query(query2, {
+        replacements: {email: email},
+        type: Sequelize.QueryTypes.SELECT
+      })
       const newUser = {
-          first_name,
-          last_name,
-          email,
+        first_name,
+        last_name,
+        email,
       };
+      let obj =  {
+        user: newUser,
+        recipes: recipes
+      }
+      
 
 
       res.send({
           loggedIn: true,
-          user: newUser,
+          user: obj,
           sessionID: req.sessionID,
       });
   } catch {
@@ -194,7 +210,7 @@ router.post("/login", async (req, res, next) => {
           req.session.user = user;
           req.session.save();
           //add session id to database
-          let query = "update users set session_id=:session where id =:userid";
+          let query = "update users set session_id=:session where id=:userid";
           const users = await db.query(query, {
               replacements: { userid: user.dataValues.id, session: req.sessionID },
               type: Sequelize.QueryTypes.UPDATE,
