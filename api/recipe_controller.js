@@ -11,57 +11,8 @@ const request = require('request');
 //const API_KEY= process.env.API_KEY;
 //const RECIPE_API_URL= `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=3&addRecipeInformation=true&query=`;
 
-let rps = [];
-;
-//if you want to find more recipes just add letters to the variable 'word'
-let word = "a";
-for (let i = 0; i < word.length; i++) {
-    request(`https://www.themealdb.com/api/json/v1/1/search.php?f=${word.charAt(i)}`, (error, response, body) => {
-        if (error) {
-            console.log(error);
-        } else {
-            JSON.parse(body).meals.forEach(element => {
-                let ingredients = [];
-                let { strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9 } = element;
-                ingredients.push(strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9);
-                let recipe = {
-                    name: element.strMeal,
-                    category: element.strCategory,
-                    area: element.strArea,
-                    instructions: element.strInstructions,
-                    image: element.strMealThumb,
-                    ingredients: ingredients
-                }
 
-                rps.push(recipe);
-            })
 
-        }
-    });
-}
-router.post('/', (req, res, next) => {
-    try {
-        rps.forEach(async (element) => {
-            //create a recipe object
-            let r = {
-                name: element.name,
-                category: element.category,
-                area: element.area,
-                instructions: element.instructions,
-                all_ingredients: element.ingredients.join(','),
-                image: element.image,
-            }
-            //store the recipe object in recipes table
-            let recipe = await models.Recipe.create(r);
-        })
-
-        res.status(200).send();
-
-    } catch (error) {
-        console.log(error);
-    }
-
-})
 
 
 //Route to serve up a recipe by product search,
@@ -126,6 +77,36 @@ router.get('/recipeid/:id', async (req, res, next) => {
         next(error);
     }
 });
+
+//A ROUTE TO SEARCH MULTIPLE RECIPES BY CATEGORY
+router.get('/recipecategory/:category', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findAll({
+            where:
+                {category: req.params.category}
+        });
+        !recipe
+            ? res.status(404).send('Category does not exist')
+            : res.status(200).json(recipe)
+    } catch (error) {
+        next(error);
+    }
+})
+
+//A ROUTE TO SEARCH MULTIPLE RECIPES BY AREA
+router.get('/recipearea/:area', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findAll({
+            where: 
+                {area: req.params.area}
+        });
+        !recipe
+            ? res.status(404).send('Area does not exist')
+            : res.status(200).json(recipe)
+    } catch (error) {
+        next(error);
+    }
+})
 
 
 //A route to add a new recipe by recipe name
@@ -192,10 +173,6 @@ router.post('/addrecipe/:name', async (req, res, next) => {
 
 //A route to add a new recipe based on given recipe name 
 router.post('/add/:name', async (req, res, next) => {
-    // if the user is not logged in , send a forbidden mesaage
-    if(!user) {
-       res.status(403).send ("User is not currently logged in.")
-    } else { 
         try {
             const { all_ingredients } = req.body
             //console.log(req.body);
@@ -225,8 +202,32 @@ router.post('/add/:name', async (req, res, next) => {
         } catch (error) {
             next(error);
         } 
-    }
 });
+
+//a route to add a favorit recipe
+router.post('/add/to-favorit/:id', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findOne({
+            where: {
+                id : req.params.id
+            }    
+        })
+        console.log(req.body.email);
+        const user = await User.findOne({
+            where: {
+                email: req.body.email
+            }
+        })
+        if(!user){
+            res.send("user account not found cannot add to favorit");
+        }else{
+            await user.addRecipe(recipe);
+            res.status(200).send("you add the recipe to your favorites successfuly");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 //a route to update a recipe by recipe id 
 router.put('/update/:id', async (req, res, next) => {

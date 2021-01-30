@@ -1,48 +1,50 @@
 const db = require('./db');
 
 const { User, Recipe, Ingredient } = require('./db/models');
+const request = require('request');
 
+let rps = [];
+//if you want to find more recipes just add letters to the variable 'word'
+let word = "ab";
+for (let i = 0; i < word.length; i++) {
+    request(`https://www.themealdb.com/api/json/v1/1/search.php?f=${word.charAt(i)}`, (error, response, body) => {
+        if (error) {
+            console.log(error);
+        } else {
+            JSON.parse(body).meals.forEach(element => {
+                let ingredients = [];
+                let { strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9 } = element;
+                ingredients.push(strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5, strIngredient6, strIngredient7, strIngredient8, strIngredient9);
+                let recipe = {
+                    name: element.strMeal,
+                    category: element.strCategory,
+                    area: element.strArea,
+                    instructions: element.strInstructions,
+                    image: element.strMealThumb,
+                    ingredients: ingredients
+                }
 
+                rps.push(recipe);
+            })
+
+        }
+    });
+}
 const seedDatabase = async() => {
   await Promise.all([
-  
-  //  Recipe.create({
-  //   name: "Oriental Knight's-spur",
-  //   description: "Suspendisse potenti. In eleifend quam a odio.  sollicitudin vitae, consectetuer eget, rutrum at, lorem."
-  //  }),
-  //  Recipe.create({
-  //   name: "Resinleaf Brickellbush",
-  //   description: "Maecenas tristique, est et tempus semper,ci lu posuere metus vitae ipsum. Aliquam non mauris.",
-  //   ingredients: "Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quisque ut erat.",
-  //   instruction: "Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis. Sed ante. Vivamus tortor. Duis mattis egestas metus.",
-  //   cookingTime: "14",
-  //   imageURL: "http://t-online.de/sapien.xml?a=penatibus&odio=et&in=magnis&hac", 
-  // }),
-
-  //  Recipe.create({
-  //   name: "Rapp's Ramonia",
-  //   description: "Integer ac leo. Pellentesque ultrices mitsuscipit ligula in lacus.",
-  //   ingredients: "Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quisque ut erat.",
-  //   instruction: "Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis. Sed ante. Vivamus tortor. Duis mattis egestas metus.",
-  //   cookingTime: "14",
-  //   imageURL: "http://t-online.de/sapien.xml?a=penatibus&odio=et&in=magnis&hac", 
-  //  }),
-  //  Recipe.create({
-  //   name: "Western Azalea",
-  //   description: "Pellentesque at nulla. Suspendisse poturus eu magna vulputate luctus.",
-  //   ingredients: "Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quisque ut erat.",
-  //   instruction: "Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis. Sed ante. Vivamus tortor. Duis mattis egestas metus.",
-  //   cookingTime: "14",
-  //   imageURL: "http://t-online.de/sapien.xml?a=penatibus&odio=et&in=magnis&hac", 
-  //  }),
-  //  Recipe.create({
-  //   name: "Mexican Orange",
-  //   description: "Duis aliquam convallis nunc. Proin e nonummy. Integer non velit.",
-  //   ingredients: "Suspendisse potenti. In eleifend quam a odio. In hac habitasse platea dictumst. Maecenas ut massa quis augue luctus tincidunt. Nulla mollis molestie lorem. Quisque ut erat.",
-  //   instruction: "Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis. Sed ante. Vivamus tortor. Duis mattis egestas metus.",
-  //   cookingTime: "14",
-  //   imageURL: "http://t-online.de/sapien.xml?a=penatibus&odio=et&in=magnis&hac", 
-  //  }),
+          rps.forEach((element) => {
+              //create a recipe object
+              let r = {
+                  name: element.name,
+                  category: element.category,
+                  area: element.area,
+                  instructions: element.instructions,
+                  all_ingredients: element.ingredients.join(','),
+                  image: element.image,
+              }
+              //store the recipe object in recipes table
+              let recipe = Recipe.create(r);
+          })
   ])
 }
 
