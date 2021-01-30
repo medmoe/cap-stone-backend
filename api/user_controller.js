@@ -200,14 +200,19 @@ router.post("/login", async (req, res, next) => {
               type: Sequelize.QueryTypes.UPDATE,
           });
           //get all recipes
-          const recipes = await User.findAll({
-            include: Recipe
+          let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+          const recipes = await db.query(query2, {
+            replacements: {email: email},
+            type: Sequelize.QueryTypes.SELECT
           })
+          let obj =  {
+            user:req.session.user,
+            recipes: recipes
+          }
           res.send({
               loggedIn: true,
-              user: req.session.user,
+              user: obj,
               sessionID: req.sessionID,
-              recipes: recipes
           });
       } else {
           res.send("not allowed");

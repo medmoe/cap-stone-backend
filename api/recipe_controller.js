@@ -205,14 +205,14 @@ router.post('/add/:name', async (req, res, next) => {
 });
 
 //a route to add a favorit recipe
-router.post('/add/to-favorit/:id', async (req, res, next) => {
+router.post('/add-to-favorite/:id', async (req, res, next) => {
     try {
         const recipe = await Recipe.findOne({
             where: {
                 id : req.params.id
             }    
         })
-        console.log(req.body.email);
+        console.log(req.body);
         const user = await User.findOne({
             where: {
                 email: req.body.email
