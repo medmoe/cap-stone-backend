@@ -205,7 +205,7 @@ router.post('/add/:name', async (req, res, next) => {
 });
 
 //a route to add a favorit recipe
-router.post('/add/to-favorit/:id', async (req, res, next) => {
+router.post('/add/to-favorite/:id', async (req, res, next) => {
     try {
         const recipe = await Recipe.findOne({
             where: {
@@ -219,7 +219,7 @@ router.post('/add/to-favorit/:id', async (req, res, next) => {
             }
         })
         if(!user){
-            res.send("user account not found cannot add to favorit");
+            res.send("user account not found cannot add to favorite");
         }else{
             await user.addRecipe(recipe);
             res.status(200).send("you add the recipe to your favorites successfuly");
