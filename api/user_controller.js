@@ -161,17 +161,27 @@ router.post("/register", async (req, res, next) => {
           session_id: req.sessionID,
           password: hashedPassword,
       });
-      console.log("new user", user);
+      //get all recipes
+      let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+      const recipes = await db.query(query2, {
+        replacements: {email: email},
+        type: Sequelize.QueryTypes.SELECT
+      })
       const newUser = {
-          first_name,
-          last_name,
-          email,
+        first_name,
+        last_name,
+        email,
       };
+      let obj =  {
+        user: newUser,
+        recipes: recipes
+      }
+      
 
 
       res.send({
           loggedIn: true,
-          user: newUser,
+          user: obj,
           sessionID: req.sessionID,
       });
   } catch {
