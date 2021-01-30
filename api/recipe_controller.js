@@ -249,7 +249,7 @@ router.put('/update/:id', async (req, res, next) => {
 //a route to update a recipe by recipe name
 router.put('/updaterecipe/:name', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (user) {
+    if (!user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
@@ -271,7 +271,7 @@ router.put('/updaterecipe/:name', async (req, res, next) => {
 
 router.delete('/delete/:name', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (user) {
+    if (!user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
@@ -293,7 +293,7 @@ router.delete('/delete/:name', async (req, res, next) => {
 //a route to delete a recipe by recipe id
 router.delete('/deletebyid/:id', async (req, res, next) => {
     // if the user is not logged in , send a forbidden mesaage
-    if (user) {
+    if (!user) {
         res.status(403).send("User is not currently logged in.")
     } else {
         try {
