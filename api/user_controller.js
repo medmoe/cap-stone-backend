@@ -18,12 +18,15 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get("/login", (req, res) => {
-	console.log(req.session);
-	console.log("in get route", req.session.user);
-
+router.get("/login/:session_id", async (req, res) => {
+  let query = "SELECT users.first_name, users.last_name, users.session_id, recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.session_id=:session_id AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;"
+  const recipes = await db.query(query, {
+    replacements: {session_id: req.params.session_id},
+    type: Sequelize.QueryTypes.SELECT
+  })
+  console.log(recipes);
 	if (req.session.user) {
-		res.send({ loggedIn: true, user: req.session.user });
+		res.send({ loggedIn: true, user: req.session.user, info: recipes });
 	} else {
 		res.send({ loggedIn: false });
 	}
@@ -58,12 +61,12 @@ router.get("/login", (req, res) => {
 //a route to register the user in our database
 router.post('/register', async (req, res, next) => {
     try {
-        const {firstName, lastName, email, password} = req.body;
+        const {first_name, last_name, email, password} = req.body;
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
         const user = await User.create({
-            firstName: firstName,
-            lastName: lastName,
+            first_name: first_name,
+            last_name: last_name,
             email: email,
             password: hashedPassword
         })
