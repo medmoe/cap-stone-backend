@@ -192,10 +192,6 @@ router.post('/addrecipe/:name', async (req, res, next) => {
 
 //A route to add a new recipe based on given recipe name 
 router.post('/add/:name', async (req, res, next) => {
-    // if the user is not logged in , send a forbidden mesaage
-    if(!user) {
-       res.status(403).send ("User is not currently logged in.")
-    } else { 
         try {
             const { all_ingredients } = req.body
             //console.log(req.body);
@@ -225,8 +221,32 @@ router.post('/add/:name', async (req, res, next) => {
         } catch (error) {
             next(error);
         } 
-    }
 });
+
+//a route to add a favorit recipe
+router.post('/add/to-favorit/:id', async (req, res, next) => {
+    try {
+        const recipe = await Recipe.findOne({
+            where: {
+                id : req.params.id
+            }    
+        })
+        console.log(req.body.email);
+        const user = await User.findOne({
+            where: {
+                email: req.body.email
+            }
+        })
+        if(!user){
+            res.send("user account not found cannot add to favorit");
+        }else{
+            await user.addRecipe(recipe);
+            res.status(200).send("you add the recipe to your favorites successfuly");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 //a route to update a recipe by recipe id 
 router.put('/update/:id', async (req, res, next) => {
