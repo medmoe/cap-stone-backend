@@ -32,6 +32,7 @@ for (let i = 0; i < word.length; i++) {
 }
 const seedDatabase = () => {
           rps.forEach(async (element) => {
+		  console.log("seed database");
               //create a recipe object
               let r = {
                   name: element.name,
