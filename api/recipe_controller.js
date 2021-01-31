@@ -91,34 +91,31 @@ router.post("/add/:name", async (req, res, next) => {
 		const newRecipe = await Recipe.findOrCreate({
 			where: {
 				name: req.params.name,
-				category: req.body.category,
-				area: req.body.area,
+				// category: req.body.category,
+				// area: req.body.area,
 				instructions: req.body.instructions,
 				all_ingredients: ingredientString,
 				//all_ingredients: req.body.all_ingredients,
 				//all_ingredients: ingredientValue,
-				image: req.body.image,
+				// image: req.body.image,
 			},
 		});
-		//const [result, created] = newRecipe;
-		//!created
-		//? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-		//: res.status(200).json({ message: "Recipe is added ", newRecipe });
+		const [result, created] = newRecipe;
+		!created
+		? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+		: res.status(200).json({ message: "Recipe is added ", newRecipe });
 
-		console.log(req.body);
 		const currentUser = await User.findOne({
 			where: {
 				email: req.body.email,
 			},
 		});
-		const addedRecipe = await currentUser.addRecipe(newRecipe);
-		res.json(addedRecipe);
+		const addedRecipe = await currentUser.addRecipe(result);
+		//res.json(addedRecipe);
 
-		!!addedRecipe
+		!addedRecipe
 			? res.status(404).send("Unable to add recipe")
-			: res
-					.status(200)
-					.json({ message: "Recipe info is updated. ", addedRecipe });
+			: res.status(200).json({ message: "Recipe info is updated. ", addedRecipe });
 	} catch (error) {
 		next(error);
 	}
@@ -126,12 +123,14 @@ router.post("/add/:name", async (req, res, next) => {
 
 //a route to add a favorit recipe
 router.post("/add-to-favorite/:id", async (req, res, next) => {
+    console.log("this is body ", req.body);
 	try {
-		const recipe = await Recipe.findOne({
+		const recipe = await Recipe.findOrCreate({
 			where: {
-				id: req.params.id,
+                id: req.params.id,
 			},
-		});
+        });
+        const [resultObj, isCreated] = recipe
 		console.log(req.body);
 		const user = await User.findOne({
 			where: {
@@ -141,7 +140,7 @@ router.post("/add-to-favorite/:id", async (req, res, next) => {
 		if (!user) {
 			res.send("user account not found cannot add to favorite");
 		} else {
-			await user.addRecipe(recipe);
+			await user.addRecipe(resultObj);
 			res.status(200).send("you add the recipe to your favorites successfuly");
 		}
 	} catch (error) {
@@ -229,74 +228,6 @@ router.delete("/deletebyid/:id", async (req, res, next) => {
 		}
 	}
 });
-
-//A route to add a new recipe by recipe name
-/*router.post('/addrecipe/:name', async (req, res, next) => {
-    // if the user is not logged in , send a forbidden mesaage
-    if(!user) {
-    //    res.status(403).send ("User is not currently logged in.")
-    } else { 
-        try {
-        
-            const { all_ingredients } = req.body
-             //console.log(req.body);
-            //console.log(typeof all_ingredients);
-            const ingredientValue = Object.values(all_ingredients)
-            //console.log (ingredientValue );
-            const ingredientString = ingredientValue.join(',')
-
-            let result = {
-                name: req.params.name,
-                category: req.body.category,
-                area: req.body.area,
-                instructions: req.body.instructions,
-                all_ingredients: ingredientString,
-                //all_ingredients: req.body.all_ingredients,
-                //all_ingredients: ingredientValue,
-                image: req.body.image
-            };
-
-            const newRecipe = await Recipe.findOrCreate({
-            where:
-            {
-                //conditions that must be met for the model to create an new recipe instance 
-                name: req.params.name,
-                category: req.body.category,
-                area: req.body.area,
-                instructions: req.body.instructions,
-                all_ingredients: ingredientString,
-                //all_ingredients: req.body.all_ingredients,
-                //all_ingredients: ingredientValue,
-                image: req.body.image
-            },
-            })
-            //const [recipeObj, created] = newRecipe;
-            //!created
-            //? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-            //: res.status(200).json({ message: "Recipe is added ", newRecipe});
-
-            //find the logged in user, add the recipe
-            // const currentUser =await User.findByPk(req.user.id, {include: Recipe});
-            console.log(req.body);
-            const currentUser = await User.findOne({
-                where: {
-                    email: req.body.email 
-                }
-            })
-            const addedRecipe= await currentUser.addRecipe(newRecipe);
-            res.json(addedRecipe);
-
-            !
-            !addedRecipe
-                ? res.status(404).send('Unable to add recipe')
-                : (res.status(200).json({ message: "Recipe info is updated. ", addedRecipe }));
-
-        } catch (error) {
-        next(error);
-        }
-    }
-});
-*/
 
 //most updated copy
 module.exports = router;

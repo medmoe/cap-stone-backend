@@ -8,11 +8,9 @@ const Recipe = db.define( 'recipe', {
         },
         category: {
             type: Sequelize.TEXT,
-            allowNull: false
         },
         area: {
             type: Sequelize.TEXT,
-            allowNull:false
         },
         instructions: {
             type: Sequelize.TEXT,
