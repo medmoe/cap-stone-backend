@@ -134,6 +134,7 @@ router.get("/session-id/:session_id", async (req, res, next) => {
 });
 
 //email checking route
+
 router.get("/:email", async (req, res, next) => {
 	try {
 		const currentUser = await User.findOne({
@@ -151,6 +152,42 @@ router.get("/:email", async (req, res, next) => {
 		console.log(error);
 	}
 });
+router.get('/email/:email', (req, res, next) => {
+  try {
+    const currentUser = User.findOne({
+      where: {
+        email: req.params.email
+      }
+    })
+    if(currentUser == null){
+      res.send("email doesn't exist");
+    }else{
+      res.send("email exist");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+router.get('/session-id/:session_id', async (req, res, next) => {
+  try {
+    const currentUser = await User.findAll({
+      where: {
+        session_id: req.params.session_id
+      },
+      include: Recipe
+    })
+    if(currentUser == null){
+      res.send("user doesn't exist");
+    }else{
+      res.send(currentUser);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+})
+
+
+
 
 // 	if (!user) {
 // 		return res.status(400).send("Cannot find user");
