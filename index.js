@@ -66,6 +66,7 @@ app.use((req, res, next) => {
 const serverRun = () => {
   const server = app.listen(PORT, () => {
     console.log(`Live on port : ${PORT}`);
+    seedDatabase();
   });
 };
 //DB Sync Function
