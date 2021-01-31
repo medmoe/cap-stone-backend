@@ -24,7 +24,7 @@ const seedDatabase = require('./seed.js');
 
 //CORS!
 const corsOptions = {
-	origin: "http://recipe-board-app.netlify.app",
+	origin: "https://recipe-board-app.netlify.app",
 	credentials: true,
 	optionsSuccessStatus: 200,
 };
