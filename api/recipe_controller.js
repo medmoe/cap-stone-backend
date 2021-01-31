@@ -140,14 +140,14 @@ router.post("/add/:name", async (req, res, next) => {
 		const ingredientValue = Object.values(all_ingredients);
 		//console.log (ingredientValue );
 		const ingredientString = ingredientValue.join(",");
-
+		console.log(typeof ingredientString);
 		const newRecipe = await Recipe.findOrCreate({
 			where: {
 				name: req.params.name,
 				category: req.body.category,
 				area: req.body.area,
 				instructions: req.body.instructions,
-				//all_ingredients: req.body.ingredientString,
+				//all_ingredients: req.body.ingredientStrSing,
 				//all_ingredients: req.body.all_ingredients,
 				all_ingredients: ingredientValue,
 				image: req.body.image,
