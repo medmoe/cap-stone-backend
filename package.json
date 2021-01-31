@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "seed": "node seed.js",
-    "hello": "node hello.js"
+    "seed": "node seed.js"
   },
   "author": "Depak Borhara",
   "license": "ISC",

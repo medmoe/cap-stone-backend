@@ -77,6 +77,7 @@ const serverRun = () => {
 db.authenticate()
   .then(() => {
     console.log("database is connected");
+	  seedDatabase();
     // fetch recipes by first letter and store them in database
   })
   .catch(error => console.log(error));
