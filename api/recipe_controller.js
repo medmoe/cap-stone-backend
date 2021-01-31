@@ -91,13 +91,13 @@ router.post("/add/:name", async (req, res, next) => {
 		const newRecipe = await Recipe.findOrCreate({
 			where: {
 				name: req.params.name,
-				// category: req.body.category,
-				// area: req.body.area,
+				category: req.body.category,
+				area: req.body.area,
 				instructions: req.body.instructions,
 				all_ingredients: ingredientString,
 				//all_ingredients: req.body.all_ingredients,
 				//all_ingredients: ingredientValue,
-				// image: req.body.image,
+				image: req.body.image,
 			},
 		});
 		const [result, created] = newRecipe;
