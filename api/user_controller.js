@@ -91,23 +91,23 @@ router.get("/login/:session_id", async (req, res) => {
 			},
 		});
 		//get all recipes
-		let query2 =
-			"SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
-		const recipes = await db.query(query2, {
-			replacements: { email: user.email },
-			type: Sequelize.QueryTypes.SELECT,
-		});
-		let userInfo = {
-			email: user.email,
-			first_name: user.first_name,
-			last_name: user.last_name,
-		};
-		let obj = {
-			user: userInfo,
-			recipes: recipes,
-		};
+
 		if (user) {
-			console.log(user);
+			let query2 =
+				"SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+			const recipes = await db.query(query2, {
+				replacements: { email: user.email },
+				type: Sequelize.QueryTypes.SELECT,
+			});
+			let userInfo = {
+				email: user.email,
+				first_name: user.first_name,
+				last_name: user.last_name,
+			};
+			let obj = {
+				user: userInfo,
+				recipes: recipes,
+			};
 			res.send({ loggedIn: true, user: obj });
 		} else {
 			res.send({ loggedIn: false });
