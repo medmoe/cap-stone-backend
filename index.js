@@ -86,6 +86,7 @@ const syncDb = () => {
   
   if (process.env.NODE_ENV === 'production') {
     db.sync();
+	  seedDatabase();
   }
   else {
     console.log('As a reminder, the forced synchronization option is on');
