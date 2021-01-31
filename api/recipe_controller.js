@@ -40,23 +40,27 @@ router.post("/", async (req,res,next) => {
 	try{
 		rps.forEach(async (element) => {
               //create a recipe object
-              let r = {
-                  name: element.name,
+              
+              //store the recipe object in recipes table
+              let apiRecipe = await Recipe.findOrCreate({
+              	where: {
+              	  name: element.name,
                   category: element.category,
                   area: element.area,
                   instructions: element.instructions,
                   all_ingredients: element.ingredients.join(','),
                   image: element.image,
-              }
-              //store the recipe object in recipes table
-              let recipe = await Recipe.create(r);
-          })
-
-	}catch(error){
-		consol.log(error);
+              	}
+              });
+              const [obj, whatsCreated] = apiRecipe;
+			!whatsCreated
+			? res.status(404).send({ message: "Recipe not added, already exists in the database" })
+			: res.status(200).json({ message: "Recipe is added ", apiRecipe });
+		})
+	}catch (error){
+		console.log(error);
 	}
-
-})
+});
 ////A route to fetch all recipes
 router.get("/", async (req, res, next) => {
 	try {
@@ -143,7 +147,7 @@ router.post("/add/:name", async (req, res, next) => {
 				category: req.body.category,
 				area: req.body.area,
 				instructions: req.body.instructions,
-				all_ingredients: ingredientString,
+				all_ingredients: req.body.ingredientString,
 				//all_ingredients: req.body.all_ingredients,
 				//all_ingredients: ingredientValue,
 				image: req.body.image,
