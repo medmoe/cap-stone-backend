@@ -5,7 +5,7 @@ const request = require('request');
 
 let rps = [];
 //if you want to find more recipes just add letters to the variable 'word'
-let word = "ab";
+let word = "abc";
 for (let i = 0; i < word.length; i++) {
     request(`https://www.themealdb.com/api/json/v1/1/search.php?f=${word.charAt(i)}`, (error, response, body) => {
         if (error) {
