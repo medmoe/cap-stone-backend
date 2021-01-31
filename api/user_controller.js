@@ -158,38 +158,45 @@ router.get("/login/:session_id", async (req, res) => {
 router.post("/register", async (req, res, next) => {
   try {
       const { first_name, last_name, email, password } = req.body;
-      const salt = await bcrypt.genSalt();
-      const hashedPassword = await bcrypt.hash(password, salt);
-      const user = await User.create({
-          first_name: first_name,
-          last_name: last_name,
-          email: email,
-          session_id: req.sessionID,
-          password: hashedPassword,
-      });
-      //get all recipes
-      let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
-      const recipes = await db.query(query2, {
-        replacements: {email: email},
-        type: Sequelize.QueryTypes.SELECT
+      const currentUser = await User.findOne({
+        where:{email: email}
       })
-      const newUser = {
-        first_name,
-        last_name,
-        email,
-      };
-      let obj =  {
-        user: newUser,
-        recipes: recipes
+      if(!currentUser){
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await User.create({
+            first_name: first_name,
+            last_name: last_name,
+            email: email,
+            session_id: req.sessionID,
+            password: hashedPassword,
+        });
+        //get all recipes
+        let query2 = "SELECT recipes.name, recipes.category, recipes.area, recipes.instructions, recipes.all_ingredients, recipes.image FROM users INNER JOIN user_recipe ON users.email=:email AND users.id=user_recipe.user_id INNER JOIN recipes ON user_recipe.recipe_id=recipes.id;";
+        const recipes = await db.query(query2, {
+          replacements: {email: email},
+          type: Sequelize.QueryTypes.SELECT
+        })
+        const newUser = {
+          first_name,
+          last_name,
+          email,
+        };
+        let obj =  {
+          user: newUser,
+          recipes: recipes
+        }
+        
+
+
+        res.send({
+            loggedIn: true,
+            user: obj,
+            sessionID: req.sessionID,
+        });
+      }else{
+        res.status(403).send("user already exists");
       }
-      
-
-
-      res.send({
-          loggedIn: true,
-          user: obj,
-          sessionID: req.sessionID,
-      });
   } catch {
       res.status(500).send();
   }

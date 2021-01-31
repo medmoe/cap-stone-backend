@@ -149,14 +149,19 @@ router.post('/addrecipe/:name', async (req, res, next) => {
                 image: req.body.image
             },
             })
-            const [recipeObj, created] = newRecipe;
+            //const [recipeObj, created] = newRecipe;
             //!created
             //? res.status(404).send({ message: "Recipe not added, already exists in the database" })
             //: res.status(200).json({ message: "Recipe is added ", newRecipe});
 
             //find the logged in user, add the recipe
-            const currentUser =await User.findByPk(req.user.id, {include: Recipe});
-
+            // const currentUser =await User.findByPk(req.user.id, {include: Recipe});
+            console.log(req.body);
+            const currentUser = await User.findOne({
+                where: {
+                    email: req.body.email 
+                }
+            })
             const addedRecipe= await currentUser.addRecipe(newRecipe);
             res.json(addedRecipe);
 
@@ -215,7 +220,7 @@ router.post('/add-to-favorite/:id', async (req, res, next) => {
         console.log(req.body);
         const user = await User.findOne({
             where: {
-                email: req.body.email
+                email: req.body.email 
             }
         })
         if(!user){
