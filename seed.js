@@ -3,6 +3,7 @@ const db = require('./db');
 const { User, Recipe, Ingredient } = require('./db/models');
 const request = require('request');
 
+onst seedDatabase = () => {
 let rps = [];
 //if you want to find more recipes just add letters to the variable 'word'
 let word = "abc";
@@ -30,9 +31,7 @@ for (let i = 0; i < word.length; i++) {
         }
     });
 }
-const seedDatabase = () => {
           rps.forEach(async (element) => {
-		  console.log("seed database");
               //create a recipe object
               let r = {
                   name: element.name,
