@@ -140,7 +140,6 @@ router.post("/add/:name", async (req, res, next) => {
 		const ingredientValue = Object.values(all_ingredients);
 		//console.log (ingredientValue );
 		const ingredientString = ingredientValue.join(",");
-		console.log(typeof ingredientString);
 		const newRecipe = await Recipe.findOrCreate({
 			where: {
 				name: req.params.name,
@@ -149,14 +148,14 @@ router.post("/add/:name", async (req, res, next) => {
 				instructions: req.body.instructions,
 				//all_ingredients: req.body.ingredientString,
 				//all_ingredients: req.body.all_ingredients,
-				all_ingredients: ingredientValue,
+				all_ingredients: ingredientString,
 				image: req.body.image,
 			},
 		});
 		const [result, created] = newRecipe;
 		!created
 		? res.status(404).send({ message: "Recipe not added, already exists in the database" })
-		: res.status(200).json({ message: "Recipe is added ", newRecipe });
+		: res.status(200).json({ message: "Recipe is added ", result });
 
 		const currentUser = await User.findOne({
 			where: {
